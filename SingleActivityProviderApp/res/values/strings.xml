@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SingleActivityProviderApp</string>
+    <string name="del_all">DB의 모든 내용 지우기</string>
+    <string name="add">내용을 DB에 추가</string>
+
+</resources>
