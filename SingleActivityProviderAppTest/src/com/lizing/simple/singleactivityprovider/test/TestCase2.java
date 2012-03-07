@@ -8,7 +8,6 @@ import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.jayway.android.robotium.solo.Solo;
 import com.lizing.simple.singleactivityprovider.MyContentProvider;
 import com.lizing.simple.singleactivityprovider.MySingleActivityProvider;
 import com.lizing.simple.singleactivityprovider.SingleActivityProviderAppActivity;
@@ -18,7 +17,6 @@ public class TestCase2 extends ActivityProviderInstrumentationTestCase2<SingleAc
 	Activity activity;
 	EditText text;
 	Button addButton, delButton;
-	//Solo solo;
 	
 	public TestCase2() {
 		super(SingleActivityProviderAppActivity.class,MyContentProvider.class, "com.lizing.simple.singleactivityprovider");
