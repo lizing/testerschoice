@@ -14,13 +14,13 @@ import com.lizing.simple.singleactivityprovider.SingleActivityProviderAppActivit
 
 public class TestCase2 extends ActivityProviderInstrumentationTestCase2<SingleActivityProviderAppActivity, MyContentProvider> {
 
-	Activity activity;
 	EditText text;
 	Button addButton, delButton;
 	
 	public TestCase2() {
 		super(SingleActivityProviderAppActivity.class,MyContentProvider.class, "com.lizing.simple.singleactivityprovider");
 	}
+	
 	/*
 	public void testPreConditions(){
 		Activity a = getActivity();
