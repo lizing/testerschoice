@@ -1,3 +1,4 @@
+AndroidTestFramework - 안드로이드에서 제공하는 Test Framework들 (ActivityInstrumentationTestCase2, ProviderTestCase2, ActivityUnitTestCase 등등)
 SingleActivityProviderApp - 테스트 대상 어플리케이션 프로젝트
 SingleActivityProviderAppTest - 위의 어플리케이션을 테스트하는 프로젝트
 
