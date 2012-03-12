@@ -1,5 +1,7 @@
 팀명 - 동갑내기
+팀원 - 이진우(팀장), 김승현, 이승종, 천연식
 프로젝트명 - TESTER's CHOICE
+지도교수 - 정인상 교수님
 
 프로젝트 개요
 기존 안드로이드 Testing 프레임워크의 단점을 보완하고 테스트케이스와 같은 문서, 테스트에 대한 결과의 이력 등을 자동화하여
@@ -15,3 +17,5 @@ SingleActivityProviderApp - 테스트 대상 임시 어플리케이션 프로젝
 SingleActivityProviderAppTest - 위의 어플리케이션을 테스트하는 프로젝트
 
 SingleActivityProviderAppTest의 ActivityProviderInstrumentationTestCase2.java를 이용해서 테스트 케이스 작성
+
+연락처 - lizingkr@gmail.com (이진우)
