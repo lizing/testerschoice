@@ -1,5 +1,17 @@
-AndroidTestFramework - �ȵ���̵忡�� �����ϴ� Test Framework�� (ActivityInstrumentationTestCase2, ProviderTestCase2, ActivityUnitTestCase ���)
-SingleActivityProviderApp - �׽�Ʈ ��� ���ø����̼� ������Ʈ
-SingleActivityProviderAppTest - ���� ���ø����̼��� �׽�Ʈ�ϴ� ������Ʈ
+팀명 - 동갑내기
+프로젝트명 - TESTER's CHOICE
 
-SingleActivityProviderAppTest�� ActivityProviderInstrumentationTestCase2.java�� �̿��ؼ� �׽�Ʈ ���̽� �ۼ�
+프로젝트 개요
+기존 안드로이드 Testing 프레임워크의 단점을 보완하고 테스트케이스와 같은 문서, 테스트에 대한 결과의 이력 등을 자동화하여
+테스트 시간과 비용의 효율을 극대화하고 나아가 개발자에게 소프트웨어의 품질 향상을 유도 할 수 있는 프로젝트 완성을 목표로 한다.
+
+타겟머신 – PC, Android Platform
+타겟운영체제 - Android
+개발도구 - Eclipse
+개발언어 - JAVA
+
+AndroidTestFramework - 안드로이드에서 제공하는 Test Framework들 참고용 (ActivityInstrumentationTestCase2, ProviderTestCase2, ActivityUnitTestCase 등등)
+SingleActivityProviderApp - 테스트 대상 임시 어플리케이션 프로젝트
+SingleActivityProviderAppTest - 위의 어플리케이션을 테스트하는 프로젝트
+
+SingleActivityProviderAppTest의 ActivityProviderInstrumentationTestCase2.java를 이용해서 테스트 케이스 작성
