@@ -41,44 +41,12 @@ public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activi
 		
 		mContext = new MockContextWithMockContentProvider(getInstrumentation().getTargetContext(), mProviderClass, mAuthority);
 		mContext.makeExistingFilesAndDbsAccessible();
-		
-		/*
-		if(mApplication == null){
-			setApplication(new MockApplication());
-		}
-		
-		ComponentName cn = new ComponentName(mActivityClass.getPackage().getName(), mActivityClass.getName());
-		
-		Intent intent = new Intent(Intent.ACTION_MAIN);
-		intent.setClassName(mContext, mActivityClass.getName());
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.setComponent(cn);
-		mMockParent = new MockParent();
-		
-		mActivity = (T) getInstrumentation().newActivity(mActivityClass, mContext, null, mApplication, 
-				intent, new ActivityInfo(), mActivityClass.getName(), mMockParent, null, null);
-
-		*/
-		
-		//setActivityIntent(intent);
-		//launchActivityWithIntent(mActivityClass.getPackage().getName(), mActivityClass, intent);
-		//getInstrumentation().startActivitySync(intent);
-		//getInstrumentation().waitForIdleSync();
-		//setActivity(mActivity);
-		//getInstrumentation().startActivitySync(intent);
-		
-		//setActivityIntent(intent);
-		//setActivity(mActivity);
-		
-		//getInstrumentation().callActivityOnCreate(mActivity, null);
-		//getInstrumentation().startActivitySync(intent);
-		//getInstrumentation().waitForIdleSync();
 	}
 	
 	public T startActivity(){
 		T newActivity = null;
 		
-		try{
+		try{			
 			if(mApplication == null){
 				setApplication(new MockApplication());
 			}
@@ -125,36 +93,12 @@ public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activi
 	
 	@Override
 	public T getActivity(){
-		return mActivity;
+		if(mActivity != null)
+			return mActivity;
+		else
+			return null;
 	}
 	
-	/*
-	@Override
-	public T getActivity(){
-		Intent intent = new Intent();
-		intent.setClassName(mContext, mActivityClass.getName());
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		
-		T activity = null;
-		
-		if(mContext != null){
-			final String pkg = mContext.getPackageName();
-			activity = launchActivityWithIntent(pkg, mActivityClass, intent);
-		}
-		
-		return activity;
-	}
-	*/
-	
-	/*
-	@Override
-	public T getActivity(){
-		
-		getInstrumentation().callActivityOnCreate(mActivity, null);
-		
-		return mActivity;
-	}
-	*/
 	private static class MockParent extends Activity{
 		public int mRequestedOrientation = 0;
 		public Intent mStartedActivityIntent = null;
