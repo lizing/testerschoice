@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <provider android:authorities="com.lizing.simple.singleactivityprovider" android:name="MyContentProvider"></provider>
+        <activity android:name="SecondActivity"></activity>
     </application>
 
 </manifest>
