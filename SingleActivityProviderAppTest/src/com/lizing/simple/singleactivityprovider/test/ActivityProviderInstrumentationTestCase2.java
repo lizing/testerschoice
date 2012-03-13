@@ -42,6 +42,7 @@ public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activi
 		mContext = new MockContextWithMockContentProvider(getInstrumentation().getTargetContext(), mProviderClass, mAuthority);
 		mContext.makeExistingFilesAndDbsAccessible();
 		
+		/*
 		if(mApplication == null){
 			setApplication(new MockApplication());
 		}
@@ -57,6 +58,8 @@ public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activi
 		mActivity = (T) getInstrumentation().newActivity(mActivityClass, mContext, null, mApplication, 
 				intent, new ActivityInfo(), mActivityClass.getName(), mMockParent, null, null);
 
+		*/
+		
 		//setActivityIntent(intent);
 		//launchActivityWithIntent(mActivityClass.getPackage().getName(), mActivityClass, intent);
 		//getInstrumentation().startActivitySync(intent);
@@ -86,6 +89,7 @@ public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activi
 			Intent intent = new Intent(Intent.ACTION_MAIN);
 			intent.setClassName(mContext, mActivityClass.getName());
 			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			intent.setAction(Intent.CATEGORY_LAUNCHER);
 			intent.setComponent(cn);
 			mMockParent = new MockParent();
 			
@@ -96,11 +100,20 @@ public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activi
 		}
 		
 		assertNotNull(newActivity);
+		setActivity(newActivity);
 		
 		getInstrumentation().callActivityOnCreate(newActivity, null);
+		
 		return newActivity;
 	}
 	
+	
+	@Override
+	protected void setActivity(Activity testActivity) {
+		// TODO Auto-generated method stub
+		mActivity = (T) testActivity;
+	}
+
 	@Override
 	public void tearDown() throws Exception{
 		super.tearDown();
@@ -112,14 +125,6 @@ public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activi
 	
 	@Override
 	public T getActivity(){
-		Intent intent = new Intent(Intent.ACTION_MAIN);
-		intent.setClass(mContext, mActivityClass);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		assertNotNull(mContext);
-		if(mContext!= null){
-			mContext.startActivity(intent);
-		}
-		
 		return mActivity;
 	}
 	
