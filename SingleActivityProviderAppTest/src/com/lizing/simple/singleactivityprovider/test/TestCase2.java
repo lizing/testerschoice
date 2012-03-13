@@ -15,6 +15,7 @@ public class TestCase2 extends ActivityProviderInstrumentationTestCase2<SingleAc
 	EditText mText;
 	Button mAddButton;
 	Button mDelAllButton;
+	Button mMoveButton;
 	
 	public TestCase2(){
 		super(SingleActivityProviderAppActivity.class, MyContentProvider.class, "com.lizing.simple.singleactivityprovider");
@@ -30,11 +31,16 @@ public class TestCase2 extends ActivityProviderInstrumentationTestCase2<SingleAc
 		assertNotNull(mAddButton);
 		mDelAllButton = (Button) mTestActivity.findViewById(com.lizing.simple.singleactivityprovider.R.id.btn_del_all);
 		assertNotNull(mDelAllButton);
+		mMoveButton = (Button) mTestActivity.findViewById(com.lizing.simple.singleactivityprovider.R.id.btn_move);
 	}
 	
 	public void testAddButton(){
 		mText.setText("Hello Test!!");
 		
 		mAddButton.performClick();
+	}
+	
+	public void testMoveButton(){
+		mMoveButton.performClick();
 	}
 }
