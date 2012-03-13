@@ -26,7 +26,6 @@ public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activi
 	private MockParent mMockParent;
 	
 	private MockContextWithMockContentProvider mContext;
-	
 	private T mActivity;
 	
 	public ActivityProviderInstrumentationTestCase2(Class<T> activityClass, Class<P> providerClass, String authority){
