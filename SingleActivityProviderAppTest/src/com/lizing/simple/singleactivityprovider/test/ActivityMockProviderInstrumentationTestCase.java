@@ -2,21 +2,24 @@ package com.lizing.simple.singleactivityprovider.test;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.Instrumentation;
 import android.content.ComponentName;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.IBinder;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.RenamingDelegatingContext;
 import android.test.mock.MockApplication;
+import android.test.mock.MockContentProvider;
 import android.test.mock.MockContentResolver;
 import android.view.Window;
 
-public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activity, P extends ContentProvider> extends
+public abstract class ActivityMockProviderInstrumentationTestCase <T extends Activity, P extends ContentProvider> extends
 		ActivityInstrumentationTestCase2 {
 	
 	private Class<T> mActivityClass;
@@ -28,7 +31,7 @@ public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activi
 	private MockContextWithMockContentProvider mContext;
 	private T mActivity;
 	
-	public ActivityProviderInstrumentationTestCase2(Class<T> activityClass, Class<P> providerClass, String authority){
+	public ActivityMockProviderInstrumentationTestCase(Class<T> activityClass, Class<P> providerClass, String authority){
 		super(activityClass);
 		mActivityClass = activityClass;
 		mProviderClass = providerClass;
@@ -143,6 +146,7 @@ public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activi
 
 		private static final String MOCK_FILE_PREFIX = "test.";
 		private MockContentResolver mResolver;
+		private MyContentProvider mProvider;
 		
 		public MockContextWithMockContentProvider(Context context, Class<P> providerClass, String authority) throws Exception {
 			super(context, MOCK_FILE_PREFIX);
@@ -151,7 +155,8 @@ public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activi
 		
 		private void init(String authority, Class<P> providerClass) throws Exception{
 			mResolver = new MockContentResolver();
-			P mProvider = providerClass.newInstance();
+			//P mProvider = providerClass.newInstance();
+			mProvider = new MyContentProvider();
 			mProvider.attachInfo(this, null);
 			assertNotNull(mProvider);
 			mResolver.addProvider(authority, mProvider);
@@ -161,5 +166,31 @@ public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activi
 		public ContentResolver getContentResolver(){
 			return mResolver;
 		}
+	}
+	
+	private class MyContentProvider extends MockContentProvider{
+
+		@Override
+		public int delete(Uri uri, String selection, String[] selectionArgs) {
+			// TODO Auto-generated method stub
+			System.out.println("delete invoked");
+			return super.delete(uri, selection, selectionArgs);
+		}
+
+		@Override
+		public Uri insert(Uri uri, ContentValues values) {
+			// TODO Auto-generated method stub
+			System.out.println("insert invoked");
+			return super.insert(uri, values);
+		}
+
+		@Override
+		public Cursor query(Uri uri, String[] projection, String selection,
+				String[] selectionArgs, String sortOrder) {
+			// TODO Auto-generated method stub
+			System.out.println("query invoked");
+			return super.query(uri, projection, selection, selectionArgs, sortOrder);
+		}
+		
 	}
 }
