@@ -8,5 +8,7 @@
     <string name="cancel">취소</string>
     <string name="add">추가</string>
     <string name="del_all">모두 삭제</string>
+    <string name="alert">알림</string>
+    <string name="confirm">확인</string>
 
 </resources>

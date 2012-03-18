@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -49,6 +51,15 @@ public class MainActivity extends Activity {
 				getContentResolver().delete(MoneyBookColumns.CONTENT_URI, null, null);
 				Toast.makeText(MainActivity.this, "내용을 모두 삭제하였습니다.", Toast.LENGTH_SHORT);
 				displayList();
+			}
+		});
+	    
+	    mListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// TODO Auto-generated method stub
+				// 아직 구현되지 않음
 			}
 		});
 	}

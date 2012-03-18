@@ -1,7 +1,9 @@
 package com.testerschoice.moneybook;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -44,11 +46,13 @@ public class AddNewActivity extends Activity {
 				
 				if(item.isEmpty()){
 					// 알림 창 코드 추가
+					displayDialog("상품 이름을 입력해 주세요.");
 					return;
 				}
 				
 				if(itemPrice.isEmpty()){
 					//알림 창 코드 추가
+					displayDialog("상품 가격을 입력해 주세요.");
 					return;
 				}
 				
@@ -83,6 +87,22 @@ public class AddNewActivity extends Activity {
 				finish();
 			}
 		});
+	}
+	
+	private void displayDialog(String message){
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		alert.setTitle(R.string.alert);
+		alert.setMessage(message);
+		alert.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				dialog.dismiss();
+			}
+		});
+		
+		alert.show();
 	}
 
 }
