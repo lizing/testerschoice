@@ -17,6 +17,7 @@
         </activity>
         <activity android:name="AddNewActivity"></activity>
         <provider android:name="MoneyBookProvider" android:authorities="com.testerschoice.provider.MoneyBook"></provider>
+        <activity android:name="ViewItemActivity"></activity>
     </application>
 
 </manifest>

@@ -60,6 +60,7 @@ public class MainActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// TODO Auto-generated method stub
 				// 아직 구현되지 않음
+				// 리스트뷰를 선택했을 때 해당 아이템의 정보를 볼 수 있는 새 액티비티를 띄우는 메쏘드
 			}
 		});
 	}
