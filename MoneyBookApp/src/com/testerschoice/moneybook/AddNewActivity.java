@@ -28,6 +28,7 @@ public class AddNewActivity extends Activity {
 	    mSubmitButton = (Button) findViewById(R.id.submit_button);
 	    mCancelButton = (Button) findViewById(R.id.cancel_button);
 	    mItem = (EditText) findViewById(R.id.purchase_item_name);
+	    mPrice = (EditText) findViewById(R.id.purchase_price);
 	    mDate = (DatePicker) findViewById(R.id.purchase_date);
 	    
 	    mSubmitButton.setOnClickListener(new View.OnClickListener() {
