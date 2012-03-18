@@ -20,7 +20,7 @@ public class MoneyBookProvider extends ContentProvider {
 	private static final String TAG = "MoneyBookProvider";
 	
 	private static final String DATABASE_NAME = "moneybook.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String MONEYBOOK_TABLE_NAME = "items";
     
     private class DataBaseHelper extends SQLiteOpenHelper{
@@ -32,7 +32,7 @@ public class MoneyBookProvider extends ContentProvider {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL("CREATE TABLE " + MONEYBOOK_TABLE_NAME + " (" 
-			+ MoneyBookColumns._ID + "INTEGER PRIMARY KEY,"
+			+ MoneyBookColumns._ID + " INTEGER PRIMARY KEY,"
 			+ MoneyBookColumns.ITEM + " TEXT,"
 			+ MoneyBookColumns.ITEM_PRICE + " INTEGER,"
 			+ MoneyBookColumns.PURCHASE_DATE_YEAR + " INTEGER,"
@@ -45,7 +45,7 @@ public class MoneyBookProvider extends ContentProvider {
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS notes");
+            db.execSQL("DROP TABLE IF EXISTS items");
             onCreate(db);
 		}
     }

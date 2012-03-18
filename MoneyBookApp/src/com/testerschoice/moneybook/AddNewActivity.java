@@ -43,10 +43,12 @@ public class AddNewActivity extends Activity {
 				int year = mDate.getYear();
 				
 				if(item.isEmpty()){
+					// 알림 창 코드 추가
 					return;
 				}
 				
 				if(itemPrice.isEmpty()){
+					//알림 창 코드 추가
 					return;
 				}
 				
@@ -56,17 +58,18 @@ public class AddNewActivity extends Activity {
 				values.put(MoneyBookColumns.ITEM, item);
 				values.put(MoneyBookColumns.ITEM_PRICE, price);
 				values.put(MoneyBookColumns.PURCHASE_DATE_YEAR, year);
-				values.put(MoneyBookColumns.PURCHASE_DATE_MONTH, month);
+				values.put(MoneyBookColumns.PURCHASE_DATE_MONTH, month + 1); // 0부터 요일이 시작하기 때문에 1을 더해 줌
 				values.put(MoneyBookColumns.PURCHASE_DATE_DAY, day);
 				
 				Uri newUri = getContentResolver().insert(MoneyBookColumns.CONTENT_URI, values);
 				
 				if(newUri != null){
 					Toast.makeText(AddNewActivity.this, "입력 완료", Toast.LENGTH_SHORT);
+					finish();
 				} else {
 					Toast.makeText(AddNewActivity.this, "입력 실패, 입력 정보를 확인해 주세요", Toast.LENGTH_SHORT);
-					mItem.setText("");
-					mPrice.setText("");
+					//mItem.setText("");
+					//mPrice.setText("");
 				}
 				
 			}
@@ -77,7 +80,7 @@ public class AddNewActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				
+				finish();
 			}
 		});
 	}
