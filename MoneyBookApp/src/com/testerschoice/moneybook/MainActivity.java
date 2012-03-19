@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
 	    
 	    addButton.setOnClickListener(new View.OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent(MainActivity.this, AddNewActivity.class);
@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
 	    
 	    mDelAllButton.setOnClickListener(new View.OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				getContentResolver().delete(MoneyBookColumns.CONTENT_URI, null, null);
@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
 	    
 	    mListView.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
+			
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// TODO Auto-generated method stub
 				// 아직 구현되지 않음

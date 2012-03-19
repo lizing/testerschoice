@@ -12,5 +12,7 @@
     <string name="confirm">확인</string>
     <string name="delete">삭제</string>
     <string name="back">뒤로</string>
+    <string name="input_name">상품 이름을 입력해 주세요.</string>
+    <string name="input_price">상품 가격을 입력해 주세요.</string>
 
 </resources>

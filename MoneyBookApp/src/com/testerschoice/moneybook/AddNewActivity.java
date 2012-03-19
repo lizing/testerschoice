@@ -35,7 +35,7 @@ public class AddNewActivity extends Activity {
 	    
 	    mSubmitButton.setOnClickListener(new View.OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				String item = mItem.getText().toString();
@@ -46,13 +46,15 @@ public class AddNewActivity extends Activity {
 				
 				if(item.isEmpty()){
 					// 알림 창 코드 추가
-					displayDialog("상품 이름을 입력해 주세요.");
+					String message = getResources().getString(R.string.input_name);
+					displayDialog(message);
 					return;
 				}
 				
 				if(itemPrice.isEmpty()){
 					//알림 창 코드 추가
-					displayDialog("상품 가격을 입력해 주세요.");
+					String message = getResources().getString(R.string.input_price);
+					displayDialog(message);
 					return;
 				}
 				
@@ -68,10 +70,10 @@ public class AddNewActivity extends Activity {
 				Uri newUri = getContentResolver().insert(MoneyBookColumns.CONTENT_URI, values);
 				
 				if(newUri != null){
-					Toast.makeText(AddNewActivity.this, "입력 완료", Toast.LENGTH_SHORT);
+					Toast.makeText(AddNewActivity.this, "입력 완료", Toast.LENGTH_SHORT).show();
 					finish();
 				} else {
-					Toast.makeText(AddNewActivity.this, "입력 실패, 입력 정보를 확인해 주세요", Toast.LENGTH_SHORT);
+					Toast.makeText(AddNewActivity.this, "입력 실패, 입력 정보를 확인해 주세요", Toast.LENGTH_SHORT).show();
 					//mItem.setText("");
 					//mPrice.setText("");
 				}
@@ -81,7 +83,7 @@ public class AddNewActivity extends Activity {
 	    
 	    mCancelButton.setOnClickListener(new View.OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				finish();
@@ -95,7 +97,7 @@ public class AddNewActivity extends Activity {
 		alert.setMessage(message);
 		alert.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
 			
-			@Override
+			
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
 				dialog.dismiss();

@@ -24,7 +24,7 @@ public class TestCase2 extends ActivityProviderInstrumentationTestCase2<SingleAc
 	public void setUp() throws Exception{
 		super.setUp();
 		mTestActivity = startActivity();
-		assertEquals(mTestActivity, getActivity());
+		assertNotNull(mTestActivity);
 		mText = (EditText) mTestActivity.findViewById(com.lizing.simple.singleactivityprovider.R.id.editText1);
 		assertNotNull(mText);
 		mAddButton = (Button) mTestActivity.findViewById(com.lizing.simple.singleactivityprovider.R.id.btn_add);
