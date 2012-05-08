@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -32,7 +33,7 @@ public class MoneyBookProvider extends ContentProvider {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL("CREATE TABLE " + MONEYBOOK_TABLE_NAME + " (" 
-			+ MoneyBookColumns._ID + " INTEGER PRIMARY KEY,"
+			+ BaseColumns._ID + " INTEGER PRIMARY KEY,"
 			+ MoneyBookColumns.ITEM + " TEXT,"
 			+ MoneyBookColumns.ITEM_PRICE + " INTEGER,"
 			+ MoneyBookColumns.PURCHASE_DATE_YEAR + " INTEGER,"
