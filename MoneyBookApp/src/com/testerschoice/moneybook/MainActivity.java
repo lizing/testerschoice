@@ -16,7 +16,7 @@ import com.testerschoice.moneybook.MoneyBook.MoneyBookColumns;
 
 public class MainActivity extends Activity {
 
-	Button addButton, mDelAllButton;
+	Button mAddButton, mDelAllButton;
 	ListView mListView;
 	ArrayAdapter<String> adapter;
 	
@@ -26,14 +26,14 @@ public class MainActivity extends Activity {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.main);
 	    
-	    addButton = (Button) findViewById(R.id.add_button);
+	    mAddButton = (Button) findViewById(R.id.add_button);
 	    mDelAllButton = (Button) findViewById(R.id.del_all_button);
 	    mListView = (ListView) findViewById(R.id.listView1);
 	    adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
 	    
 	    displayList();
 	    
-	    addButton.setOnClickListener(new View.OnClickListener() {
+	    mAddButton.setOnClickListener(new View.OnClickListener() {
 			
 			
 			public void onClick(View v) {

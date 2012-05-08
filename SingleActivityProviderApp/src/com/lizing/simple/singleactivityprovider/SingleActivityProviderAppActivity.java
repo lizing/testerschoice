@@ -33,8 +33,6 @@ public class SingleActivityProviderAppActivity extends Activity {
         addButton = (Button) findViewById(R.id.btn_add);
         delAllButton = (Button) findViewById(R.id.btn_del_all);
         moveButton = (Button) findViewById(R.id.btn_move);
-        radioButton = (RadioButton) findViewById(R.id.radioButton1);
-        checkbox = (CheckBox) findViewById(R.id.checkBox1);
         
         addButton.setOnClickListener(new View.OnClickListener() {
 			

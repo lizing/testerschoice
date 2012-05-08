@@ -1,0 +1,57 @@
+<%@ jet package="CodeGen" imports="java.util.*" class="TestCaseTemplate" %>
+<% ClassSkeleton skeleton = (ClassSkeleton)argument; %>
+<% String pkgName = ""; %>
+<% String activityClass = ""; %>
+<% String providerClass = ""; %>
+<% String className = ""; %>
+<% String authority = ""; %>
+
+<% pkgName = skeleton.getPackageName(); %>
+<% activityClass = skeleton.getActivityName(); %>
+<% providerClass = skeleton.getProviderName(); %>
+<% className = skeleton.getClassName(); %>
+<% authority = skeleton.getAuthority(); %>
+
+package <%=pkgName%>;
+
+import android.app.Activity;
+import android.widget.Button;
+import android.widget.EditText;
+
+import <%=pkgName+activityClass%>;
+import <%=pkgName+providerClass%>;
+
+public class <%=className%> extends ActivityProviderInstrumentationTestCase2<<%=activityClass%>, <%=providerClass%>>{
+
+	Activity testActivity;
+	
+	private static final String AUTHORITY = "<%=authority%>";
+	
+	public <%=className%>(){
+		super(<%=activityClass%>.class, <%=providerClass%>.class, AUTHORITY);
+	}
+	
+	public void setUp() throws Exception{
+	
+	}
+	
+	public void tearDown(){
+	
+	}
+	
+	
+<%if(skeleton.getMethodLists() != null){%>
+<%		ArrayList<MethodSkeleton> methodLists = skeleton.getMethodLists();%>
+<%		for(Iterator i = methodLists.iterator(); i.hasNext();){%>
+<%			MethodSkeleton method = (MethodSkeleton)i.next();%>
+<%			stringBuffer.append("public void testInput_" + method.getMethodName() + "{" + NL);%>
+<%			for(Iterator j = method.getTypeVariables().iterator(); j.hasNext();){%>
+<%				TypeVariable v = (TypeVariable)j.next();%>
+<%				String type = v.getType();%>
+<%				String id = v.getId();%>
+<%				stringBuffer.append("\t\t" + type + " " + id + ";" + NL); %>
+<%			}%>
+<%			stringBuffer.append("\t}" + NL); %>
+<%		} %>
+<%} %>
+}
