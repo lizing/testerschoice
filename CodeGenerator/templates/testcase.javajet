@@ -45,11 +45,15 @@ public class <%=className%> extends ActivityProviderInstrumentationTestCase2<<%=
 <%		for(Iterator i = methodLists.iterator(); i.hasNext();){%>
 <%			MethodSkeleton method = (MethodSkeleton)i.next();%>
 <%			stringBuffer.append("public void testInput_" + method.getMethodName() + "{" + NL);%>
-<%			for(Iterator j = method.getTypeVariables().iterator(); j.hasNext();){%>
-<%				TypeVariable v = (TypeVariable)j.next();%>
-<%				String type = v.getType();%>
-<%				String id = v.getId();%>
-<%				stringBuffer.append("\t\t" + type + " " + id + ";" + NL); %>
+<%			ArrayList<TypeVariable> viewLists = method.getTypeVariables();%>
+<%			if(viewLists.size() != 0){%>
+<%				for(int j = 0; j < viewLists.size(); j++){%>
+<%					TypeVariable tv = viewLists.get(j);%>
+<%					String type = tv.getType();%>
+<%					String id = tv.getId();%>
+<%					String s = "\t\t" + type + " variable" + j + " = (" + type + ")testActivity.findViewById(" + pkgName + ".R.id." + id +");";%>
+<%					stringBuffer.append(s + NL);%>
+<%				}%>
 <%			}%>
 <%			stringBuffer.append("\t}" + NL); %>
 <%		} %>
