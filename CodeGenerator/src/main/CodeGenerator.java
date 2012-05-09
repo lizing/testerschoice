@@ -18,17 +18,7 @@ public class CodeGenerator {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		TestCaseTemplate gen = new TestCaseTemplate();
-		/*
-		List list = new ArrayList();
-		list.add("com.testerschoice.moneybook.test");
-		list.add("AddNewActivity");
-		list.add("MoneyBookProvider");
-		list.add("TestAddNewActivity");
-		list.add("com.testerschoice.provider.MoneyBook");
-		list.add("isYunSik");
-		String file = gen.generate(list);
-		*/
-		
+			
 		ClassSkeleton skeleton = new ClassSkeleton(ACTIVITY_CLASS, PROVIDER_CLASS, AUTHORITY);
 		skeleton.setClassName(TESTCASE_CLASS_NAME);
 		skeleton.setPackageName(PKG);
