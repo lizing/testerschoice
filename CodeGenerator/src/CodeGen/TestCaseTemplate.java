@@ -25,7 +25,7 @@ public class TestCaseTemplate
   protected final String TEXT_9 = "\";" + NL + "\t" + NL + "\tpublic ";
   protected final String TEXT_10 = "(){" + NL + "\t\tsuper(";
   protected final String TEXT_11 = ".class, ";
-  protected final String TEXT_12 = ".class, AUTHORITY);" + NL + "\t}" + NL + "\t" + NL + "\tpublic void setUp() throws Exception{" + NL + "\t" + NL + "\t}" + NL + "\t" + NL + "\tpublic void tearDown(){" + NL + "\t" + NL + "\t}" + NL + "\t" + NL + "\t";
+  protected final String TEXT_12 = ".class, AUTHORITY);" + NL + "\t}" + NL + "\t" + NL + "\tpublic void setUp() throws Exception{" + NL + "\t\tsuper.setUp();" + NL + "\t\ttestActivity = startActivity();" + NL + "\t}" + NL + "\t" + NL + "\tpublic void tearDown() throws Exception{" + NL + "\t\tsuper.tearDown();" + NL + "\t}" + NL + "\t" + NL;
   protected final String TEXT_13 = NL + "}";
 
   public String generate(Object argument)
@@ -44,11 +44,11 @@ public class TestCaseTemplate
      className = skeleton.getClassName(); 
      authority = skeleton.getAuthority(); 
     stringBuffer.append(TEXT_2);
-    stringBuffer.append(pkgName);
+    stringBuffer.append(pkgName + ".test");
     stringBuffer.append(TEXT_3);
-    stringBuffer.append(pkgName+activityClass);
+    stringBuffer.append(pkgName + "." + activityClass);
     stringBuffer.append(TEXT_4);
-    stringBuffer.append(pkgName+providerClass);
+    stringBuffer.append(pkgName + "." + providerClass);
     stringBuffer.append(TEXT_5);
     stringBuffer.append(className);
     stringBuffer.append(TEXT_6);
@@ -68,18 +68,24 @@ public class TestCaseTemplate
     		ArrayList<MethodSkeleton> methodLists = skeleton.getMethodLists();
     		for(Iterator i = methodLists.iterator(); i.hasNext();){
     			MethodSkeleton method = (MethodSkeleton)i.next();
-    			stringBuffer.append("public void testInput_" + method.getMethodName() + "{" + NL);
+    			stringBuffer.append("\t" + "public void test" + method.getMethodName() + "(){" + NL);
     			ArrayList<TypeVariable> viewLists = method.getTypeVariables();
     			if(viewLists.size() != 0){
     				for(int j = 0; j < viewLists.size(); j++){
     					TypeVariable tv = viewLists.get(j);
     					String type = tv.getType();
     					String id = tv.getId();
-    					String s = "\t\t" + type + " variable" + j + " = (" + type + ")testActivity.findViewById(" + pkgName + ".R.id." + id +");";
+    					String varName = "variable" + j;
+    					String s = "\t\t" + type + " " + varName + " = (" + type + ")testActivity.findViewById(" + pkgName + ".R.id." + id +");";
     					stringBuffer.append(s + NL);
+    					if(tv.getValue() != null){
+    						stringBuffer.append("\t\t" + varName + ".setText(" + "\"" + tv.getValue() + "\"" + ");" + NL);
+    					}else{
+    						stringBuffer.append("\t\t" + varName + ".performClick();" + NL);
+    					}
     				}
     			}
-    			stringBuffer.append("\t}" + NL); 
+    			stringBuffer.append("\t}" + NL + NL); 
     		} 
     } 
     stringBuffer.append(TEXT_13);

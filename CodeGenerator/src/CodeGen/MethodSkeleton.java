@@ -21,8 +21,8 @@ public class MethodSkeleton {
 		this.methodName = methodName;
 	}
 	
-	public void setVariable(String type, String id){
-		viewLists.add(new TypeVariable(type, id));
+	public void setVariable(String type, String id, String value){
+		viewLists.add(new TypeVariable(type, id, value));
 	}
 	
 	public String getButtonEvent(String viewId){
