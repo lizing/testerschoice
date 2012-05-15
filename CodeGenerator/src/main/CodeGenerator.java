@@ -1,8 +1,5 @@
 package main;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import CodeGen.ClassSkeleton;
 import CodeGen.MethodSkeleton;
 import CodeGen.TestCaseTemplate;
