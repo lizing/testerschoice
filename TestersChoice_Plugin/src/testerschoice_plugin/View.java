@@ -20,7 +20,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
@@ -59,7 +62,7 @@ public class View extends ViewPart {
 
 	Button btn_load;
 	Combo combo_activity, combo_provider, combo_layout_xml;
-	Label lblAppname;
+	Label lbl_app_name;
 	Composite composite_view_list;
 	TabFolder tabFolder;
 	TabItem[] tabItem;
@@ -136,31 +139,31 @@ public class View extends ViewPart {
 		secuential_id = new ArrayList<String>();
 
 		Label lblTargetApplication = new Label(composite, SWT.CENTER);
-		lblTargetApplication.setFont(SWTResourceManager.getFont("¸¼Àº °íµñ", 12, SWT.NORMAL));
+		lblTargetApplication.setFont(SWTResourceManager.getFont("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½", 12, SWT.NORMAL));
 		lblTargetApplication.setBounds(0, 10, 65, 25);
 		lblTargetApplication.setText("Target App:");
 
 		Label lblActivity = new Label(composite, SWT.CENTER);
-		lblActivity.setFont(SWTResourceManager.getFont("¸¼Àº °íµñ", 11, SWT.NORMAL));
+		lblActivity.setFont(SWTResourceManager.getFont("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½", 11, SWT.NORMAL));
 		lblActivity.setText("Activity:");
 		lblActivity.setBounds(0, 93, 65, 20);
 
 		Label lblProvider = new Label(composite, SWT.CENTER);
 		lblProvider
-				.setFont(SWTResourceManager.getFont("¸¼Àº °íµñ", 12, SWT.NORMAL));
+				.setFont(SWTResourceManager.getFont("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½", 12, SWT.NORMAL));
 		lblProvider.setText("Provider:");
 		lblProvider.setBounds(0, 135, 65, 20);
 
 		Label lblXml = new Label(composite, SWT.CENTER);
-		lblXml.setFont(SWTResourceManager.getFont("¸¼Àº °íµñ", 12, SWT.NORMAL));
+		lblXml.setFont(SWTResourceManager.getFont("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½", 12, SWT.NORMAL));
 		lblXml.setText("XML:");
 		lblXml.setBounds(0, 173, 65, 20);
 
-		lblAppname = new Label(composite, SWT.NONE);
-		lblAppname.setAlignment(SWT.CENTER);
-		lblAppname.setFont(SWTResourceManager.getFont("¸¼Àº °íµñ", 12, SWT.NORMAL));
-		lblAppname.setBounds(71, 10, 238, 20);
-		lblAppname.setText("App_Name");
+		lbl_app_name = new Label(composite, SWT.NONE);
+		lbl_app_name.setAlignment(SWT.CENTER);
+		lbl_app_name.setFont(SWTResourceManager.getFont("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½", 12, SWT.NORMAL));
+		lbl_app_name.setBounds(71, 10, 238, 20);
+		lbl_app_name.setText("App_Name");
 
 		combo_activity = new Combo(composite, SWT.NONE);
 		combo_activity.setBounds(70, 94, 320, 23);
@@ -172,7 +175,7 @@ public class View extends ViewPart {
 		combo_layout_xml.setBounds(70, 170, 321, 23);
 
 		Label lblPath = new Label(composite, SWT.CENTER);
-		lblPath.setFont(SWTResourceManager.getFont("¸¼Àº °íµñ", 12, SWT.NORMAL));
+		lblPath.setFont(SWTResourceManager.getFont("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½", 12, SWT.NORMAL));
 		lblPath.setText("Path:");
 		lblPath.setBounds(0, 53, 65, 20);
 
@@ -246,10 +249,10 @@ public class View extends ViewPart {
 
 		public void widgetSelected(SelectionEvent arg0) {
 			// TODO Auto-generated method stub
-			String PackageName = "";
-			String PackagePath = "";
-			String ProjectName = "";
-			String ProjectPath = "";
+			String packageName = "";
+			String packagePath = "";
+			String projectName = "";
+			String projectPath = "";
 			// String AddSrc="\\src\\";
 			// String[] JavaClass=javafiles.list();
 			// File LoadedDirectory=new File(PackagePath+AddSrc);
@@ -257,22 +260,25 @@ public class View extends ViewPart {
 			combo_layout_xml.removeAll();
 			combo_provider.removeAll();
 
-			if (PackageName != "" || PackagePath != "") {
+			if (packageName != "" || packagePath != "") {
 
 			}
-
-			JFileChooser FileLoadPanel = new JFileChooser();
-			FileLoadPanel.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			int returnVal = FileLoadPanel.showOpenDialog(null);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				ProjectName = FileLoadPanel.getSelectedFile().getName();
-				lblAppname.setText(ProjectName);
-				ProjectPath = FileLoadPanel.getSelectedFile().getPath();
-				text_path.setText(ProjectPath);
-				// PackagePath=ProjectPath+"\\src\\";
+			
+			DirectoryDialog dlg = new DirectoryDialog(new Shell(), SWT.OPEN);
+			dlg.setText("Open...");
+			dlg.setMessage("Open Target App Project");
+			projectPath = dlg.open();
+			text_path.setText(projectPath);
+			
+			if(projectPath == null){
+				//Show Alert Dialog
+				
+				return;
 			}
 
-			File selected_directory = new File(ProjectPath);
+			File selected_directory = new File(projectPath);
+			projectName = selected_directory.getName();
+			lbl_app_name.setText(projectName);
 			ArrayList<File> files = new ArrayList<File>();
 			visitAllFiles(files, selected_directory);
 
@@ -284,8 +290,7 @@ public class View extends ViewPart {
 				}
 			}
 			combo_activity.setText("Successful creation of Class list");
-			combo_provider
-					.setText("Successful creation of ContentProvider list");
+			combo_provider.setText("Successful creation of ContentProvider list");
 
 			for (File f : files) {
 				String xmlFile = f.getName();
@@ -458,8 +463,20 @@ public class View extends ViewPart {
 
 	private void writeFile(String text) {
 
-		String name = subExtension(activity_class);
-		File file = new File("C:\\" + name + "Test.java");
+		FileDialog fd = new FileDialog(new Shell(), SWT.SAVE);
+		fd.setText("Save...");
+		fd.setFilterNames(new String[]{"Java File"});
+		fd.setFilterExtensions(new String[]{"*.java"});
+		fd.setFileName("Test" + subExtension(activity_class));
+		String fileName = fd.open();
+		
+		if(fileName == null){
+			//Show Alert Dialog
+			
+			return;
+		}
+		
+		File file = new File(fileName);
 
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter(file));

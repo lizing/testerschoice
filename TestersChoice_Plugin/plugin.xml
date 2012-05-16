@@ -22,9 +22,10 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="View"
+            category="Testers Choice"
             class="testerschoice_plugin.View"
-            id="TestersChoice_Plugin.view">
+            id="TestersChoice_Plugin.view"
+            name="Testcase Code Generator">
       </view>
    </extension>
    <extension
