@@ -202,7 +202,7 @@ public class View extends ViewPart {
 		btn_fetch.addSelectionListener(new FetchButtonListener());
 
 		tabFolder = new TabFolder(composite, SWT.NONE);
-		tabFolder.setBounds(423, 77, 359, 509);
+		tabFolder.setBounds(423, 69, 359, 517);
 
 		text_method_name = new Text(composite, SWT.BORDER);
 		text_method_name.setBounds(526, 14, 174, 20);
@@ -213,7 +213,7 @@ public class View extends ViewPart {
 		btn_add_method.addSelectionListener(new NewMethodButtonListener());
 
 		Button btn_generate = new Button(composite, SWT.NONE);
-		btn_generate.setBounds(650, 616, 132, 43);
+		btn_generate.setBounds(650, 626, 132, 43);
 		btn_generate.setText("Preview Testcase Code");
 		
 		Label lblNewLabel = new Label(composite, SWT.NONE);
@@ -256,6 +256,21 @@ public class View extends ViewPart {
 		
 		Label label_6 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		label_6.setBounds(10, 66, 381, 2);
+		
+		Label label_7 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label_7.setBounds(423, 6, 362, 2);
+		
+		Label label_8 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label_8.setBounds(423, 45, 362, 2);
+		
+		Label label_9 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label_9.setBounds(423, 592, 362, 2);
+		
+		Label label_10 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label_10.setBounds(423, 675, 362, 2);
+		
+		Label label_11 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label_11.setBounds(10, 675, 381, 2);
 		btn_generate.addSelectionListener(new GenerateButtonListener());
 
 	}
