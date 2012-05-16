@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package com.lizing.simple.singleactivityprovider.test;
+package com.testerschoice.moneybook.test;
 
 public final class R {
     public static final class attr {
