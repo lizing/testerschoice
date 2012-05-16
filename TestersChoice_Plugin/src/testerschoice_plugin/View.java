@@ -20,6 +20,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
@@ -53,12 +54,12 @@ public class View extends ViewPart {
 	 * skeleton.setClassName(TESTCASE_CLASS_NAME); skeleton.setPackageName(PKG);
 	 */
 
-	String activity_class = "";
-	String provider_class = "";
+	String activity_class;
+	String provider_class;
 	String authority = "com.testerschoice.provider.MoneyBook";
 	String pkg_name = "com.testerschoice.moneybook";
-	String testcase_class_name = "";
-	String method_name = "";
+	String testcase_class_name;
+	String method_name;
 
 	Button btn_load;
 	Combo combo_activity, combo_provider, combo_layout_xml;
@@ -83,6 +84,7 @@ public class View extends ViewPart {
 	HashMap<String, String> xmlHash = new HashMap<String, String>();
 	private Text text_2;
 	private Text text_3;
+	private Text text_authority;
 
 	/**
 	 * The content provider class is responsible for providing objects to the
@@ -138,79 +140,122 @@ public class View extends ViewPart {
 		secuential_input_value = new ArrayList<Text>();
 		secuential_id = new ArrayList<String>();
 
-		Label lblTargetApplication = new Label(composite, SWT.CENTER);
-		lblTargetApplication.setFont(SWTResourceManager.getFont("���� ���", 12, SWT.NORMAL));
-		lblTargetApplication.setBounds(0, 10, 65, 25);
+		Label lblTargetApplication = new Label(composite, SWT.NONE);
+		lblTargetApplication.setFont(SWTResourceManager.getFont("맑은 고딕", 9, SWT.NORMAL));
+		lblTargetApplication.setBounds(14, 14, 95, 20);
 		lblTargetApplication.setText("Target App:");
 
-		Label lblActivity = new Label(composite, SWT.CENTER);
-		lblActivity.setFont(SWTResourceManager.getFont("���� ���", 11, SWT.NORMAL));
+		Label lblActivity = new Label(composite, SWT.NONE);
+		lblActivity.setFont(SWTResourceManager.getFont("맑은 고딕", 9, SWT.NORMAL));
 		lblActivity.setText("Activity:");
-		lblActivity.setBounds(0, 93, 65, 20);
+		lblActivity.setBounds(14, 122, 132, 20);
 
-		Label lblProvider = new Label(composite, SWT.CENTER);
+		Label lblProvider = new Label(composite, SWT.NONE);
 		lblProvider
-				.setFont(SWTResourceManager.getFont("���� ���", 12, SWT.NORMAL));
-		lblProvider.setText("Provider:");
-		lblProvider.setBounds(0, 135, 65, 20);
+				.setFont(SWTResourceManager.getFont("맑은 고딕", 9, SWT.NORMAL));
+		lblProvider.setText("ContentProvider:");
+		lblProvider.setBounds(14, 148, 132, 20);
 
-		Label lblXml = new Label(composite, SWT.CENTER);
-		lblXml.setFont(SWTResourceManager.getFont("���� ���", 12, SWT.NORMAL));
-		lblXml.setText("XML:");
-		lblXml.setBounds(0, 173, 65, 20);
+		Label lblXml = new Label(composite, SWT.NONE);
+		lblXml.setFont(SWTResourceManager.getFont("맑은 고딕", 9, SWT.NORMAL));
+		lblXml.setText("Layout XML:");
+		lblXml.setBounds(14, 185, 95, 20);
 
 		lbl_app_name = new Label(composite, SWT.NONE);
 		lbl_app_name.setAlignment(SWT.CENTER);
-		lbl_app_name.setFont(SWTResourceManager.getFont("���� ���", 12, SWT.NORMAL));
-		lbl_app_name.setBounds(71, 10, 238, 20);
-		lbl_app_name.setText("App_Name");
+		lbl_app_name.setFont(SWTResourceManager.getFont("맑은 고딕", 9, SWT.NORMAL));
+		lbl_app_name.setBounds(152, 13, 156, 20);
+		lbl_app_name.setText("Application");
 
 		combo_activity = new Combo(composite, SWT.NONE);
-		combo_activity.setBounds(70, 94, 320, 23);
+		combo_activity.setBounds(152, 119, 239, 23);
 
 		combo_provider = new Combo(composite, SWT.NONE);
-		combo_provider.setBounds(70, 132, 321, 23);
+		combo_provider.setBounds(152, 145, 239, 23);
 
 		combo_layout_xml = new Combo(composite, SWT.NONE);
-		combo_layout_xml.setBounds(70, 170, 321, 23);
+		combo_layout_xml.setBounds(152, 182, 239, 23);
 
-		Label lblPath = new Label(composite, SWT.CENTER);
-		lblPath.setFont(SWTResourceManager.getFont("���� ���", 12, SWT.NORMAL));
-		lblPath.setText("Path:");
-		lblPath.setBounds(0, 53, 65, 20);
+		Label lblPath = new Label(composite, SWT.NONE);
+		lblPath.setFont(SWTResourceManager.getFont("맑은 고딕", 9, SWT.NORMAL));
+		lblPath.setText("Project Path:");
+		lblPath.setBounds(14, 40, 95, 20);
 
 		text_path = new Text(composite, SWT.BORDER);
-		text_path.setBounds(70, 55, 320, 21);
+		text_path.setBounds(152, 37, 239, 21);
 
 		composite_view_list = new Composite(composite, SWT.NONE);
 		composite_view_list.setBackground(SWTResourceManager
 				.getColor(SWT.COLOR_WHITE));
-		composite_view_list.setBounds(10, 259, 382, 400);
+		composite_view_list.setBounds(14, 293, 378, 366);
 
 		Button btn_load = new Button(composite, SWT.NONE);
-		btn_load.setBounds(315, 5, 76, 32);
-		btn_load.setText("Browse");
+		btn_load.setFont(SWTResourceManager.getFont("맑은 고딕", 9, SWT.NORMAL));
+		btn_load.setBounds(315, 10, 76, 23);
+		btn_load.setText("Browse...");
 		btn_load.addSelectionListener(new BrowseButtonListener());
 
 		Button btn_fetch = new Button(composite, SWT.NONE);
-		btn_fetch.setText("Fetch");
-		btn_fetch.setBounds(297, 199, 95, 50);
+		btn_fetch.setFont(SWTResourceManager.getFont("맑은 고딕", 9, SWT.NORMAL));
+		btn_fetch.setText("Fetch View(s)");
+		btn_fetch.setBounds(296, 252, 95, 35);
 		btn_fetch.addSelectionListener(new FetchButtonListener());
 
 		tabFolder = new TabFolder(composite, SWT.NONE);
-		tabFolder.setBounds(525, 65, 359, 509);
+		tabFolder.setBounds(423, 77, 359, 509);
 
 		text_method_name = new Text(composite, SWT.BORDER);
-		text_method_name.setBounds(525, 7, 277, 23);
+		text_method_name.setBounds(526, 14, 174, 20);
 
 		Button btn_add_method = new Button(composite, SWT.NONE);
-		btn_add_method.setBounds(808, 5, 76, 50);
-		btn_add_method.setText("New Method");
+		btn_add_method.setBounds(706, 14, 76, 20);
+		btn_add_method.setText("Create");
 		btn_add_method.addSelectionListener(new NewMethodButtonListener());
 
 		Button btn_generate = new Button(composite, SWT.NONE);
-		btn_generate.setBounds(808, 580, 76, 43);
-		btn_generate.setText("Generate");
+		btn_generate.setBounds(650, 616, 132, 43);
+		btn_generate.setText("Preview Testcase Code");
+		
+		Label lblNewLabel = new Label(composite, SWT.NONE);
+		lblNewLabel.setFont(SWTResourceManager.getFont("맑은 고딕", 11, SWT.NORMAL));
+		lblNewLabel.setBounds(14, 98, 56, 18);
+		lblNewLabel.setText("Class");
+		
+		Label label = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label.setBounds(10, 90, 381, 2);
+		
+		Label label_1 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label_1.setBounds(10, 174, 381, 2);
+		
+		Label label_2 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label_2.setBounds(10, 6, 381, 2);
+		
+		Label label_3 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label_3.setBounds(10, 211, 381, 2);
+		
+		Label label_4 = new Label(composite, SWT.SEPARATOR | SWT.VERTICAL);
+		label_4.setBounds(408, 4, 2, 655);
+		
+		Label lblNewLabel_1 = new Label(composite, SWT.NONE);
+		lblNewLabel_1.setBounds(423, 14, 95, 20);
+		lblNewLabel_1.setText("Method Name:");
+		
+		Label lblNewLabel_2 = new Label(composite, SWT.NONE);
+		lblNewLabel_2.setBounds(14, 221, 56, 15);
+		lblNewLabel_2.setText("Authority:");
+		
+		text_authority = new Text(composite, SWT.BORDER);
+		text_authority.setBounds(152, 219, 239, 20);
+		
+		Label label_5 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label_5.setBounds(10, 242, 381, 2);
+		
+		Label lblNewLabel_3 = new Label(composite, SWT.NONE);
+		lblNewLabel_3.setBounds(14, 69, 377, 15);
+		lblNewLabel_3.setText("Please Select and Input Information below");
+		
+		Label label_6 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label_6.setBounds(10, 66, 381, 2);
 		btn_generate.addSelectionListener(new GenerateButtonListener());
 
 	}
@@ -249,10 +294,10 @@ public class View extends ViewPart {
 
 		public void widgetSelected(SelectionEvent arg0) {
 			// TODO Auto-generated method stub
-			String packageName = "";
-			String packagePath = "";
-			String projectName = "";
-			String projectPath = "";
+			String packageName;
+			String packagePath;
+			String projectName;
+			String projectPath;
 			// String AddSrc="\\src\\";
 			// String[] JavaClass=javafiles.list();
 			// File LoadedDirectory=new File(PackagePath+AddSrc);
@@ -260,9 +305,11 @@ public class View extends ViewPart {
 			combo_layout_xml.removeAll();
 			combo_provider.removeAll();
 
+			/*
 			if (packageName != "" || packagePath != "") {
 
 			}
+			*/
 			
 			DirectoryDialog dlg = new DirectoryDialog(new Shell(), SWT.OPEN);
 			dlg.setText("Open...");
@@ -312,7 +359,7 @@ public class View extends ViewPart {
 			// TODO Auto-generated method stub
 			activity_class = combo_activity.getText();
 			provider_class = combo_provider.getText();
-			testcase_class_name = subExtension(activity_class) + "Test";
+			testcase_class_name = removeFileExtention(activity_class) + "Test";
 
 			AndroidXmlSaxParser saxB = new AndroidXmlSaxParser(
 					xmlHash.get(combo_layout_xml.getText()), "Button");
@@ -330,21 +377,18 @@ public class View extends ViewPart {
 			btnType.setText("< ButtonType >\t\t\t\t\t< EditTextType >");
 
 			for (int i = 0; i < Button_id.size(); i++) {
-
 				btn_layout_button[i] = new Button(composite_view_list, SWT.PUSH);
 				btn_layout_button[i].setBounds(10, 40 + i * 25, 170, 20);
 				btn_layout_button[i].setText(Button_id.get(i));
 				btn_layout_button[i].setData(Button_id.get(i));
-				btn_layout_button[i]
-						.addSelectionListener(new ButtonSelectedListener());
+				btn_layout_button[i].addSelectionListener(new ButtonSelectedListener());
 			}
 			for (int i = 0; i < EditText_id.size(); i++) {
 				text_layout_Text[i] = new Button(composite_view_list, SWT.PUSH);
 				text_layout_Text[i].setBounds(200, 40 + i * 25, 170, 20);
 				text_layout_Text[i].setText(EditText_id.get(i));
 				text_layout_Text[i].setData(EditText_id.get(i));
-				text_layout_Text[i]
-						.addSelectionListener(new TextSelectedListener());
+				text_layout_Text[i].addSelectionListener(new TextSelectedListener());
 			}
 			/*
 			 * for (int i = 0; i < EditText_id.size(); i++) {
@@ -388,24 +432,23 @@ public class View extends ViewPart {
 			// TODO Auto-generated method stub
 
 			TestCaseTemplate gen = new TestCaseTemplate();
-			String activity_name = subExtension(activity_class);
-			String provider_name = subExtension(provider_class);
+			String activity_name = removeFileExtention(activity_class);
+			String provider_name = removeFileExtention(provider_class);
 
-			ClassSkeleton skeleton = new ClassSkeleton(activity_name,
-					provider_name, authority);
+			ClassSkeleton skeleton = new ClassSkeleton(activity_name, provider_name, authority);
 			skeleton.setClassName(testcase_class_name);
 			skeleton.setPackageName(pkg_name);
 
 			MethodSkeleton method1 = new MethodSkeleton();
 			method1.setMethodName(method_name);
+			
 			for (int i = 0; i < tabFolderViewHeight; i++) {
 				if (secuential_input_value.get(i) != null)
-					method1.setVariable(MethodSkeleton.EDIT_TEXT, secuential_id
-							.get(i), secuential_input_value.get(i).getText());
+					method1.setVariable(MethodSkeleton.EDIT_TEXT, secuential_id.get(i), secuential_input_value.get(i).getText());
 				else
-					method1.setVariable(MethodSkeleton.EDIT_TEXT,
-							secuential_id.get(i), null);
+					method1.setVariable(MethodSkeleton.EDIT_TEXT, secuential_id.get(i), null);
 			}
+			
 			skeleton.setMethod(method1);
 
 			String file = gen.generate(skeleton);
@@ -424,8 +467,7 @@ public class View extends ViewPart {
 
 		public void widgetSelected(SelectionEvent arg0) {
 			// TODO Auto-generated method stub
-			String text = tabFolderViewHeight + ". "
-					+ (String) arg0.widget.getData();
+			String text = tabFolderViewHeight + ". " + (String)arg0.widget.getData();
 			Text selected_text = new Text(tabComposite[0], SWT.BORDER);
 			selected_text.setBounds(10, 10 + tabFolderViewHeight * 25, 150, 20);
 			// text += " is clicked.\n";
@@ -444,12 +486,10 @@ public class View extends ViewPart {
 
 		public void widgetSelected(SelectionEvent arg0) {
 			// TODO Auto-generated method stub
-			String text = tabFolderViewHeight + ". "
-					+ (String) arg0.widget.getData();
+			String text = tabFolderViewHeight + ". " + (String)arg0.widget.getData();
 			Text selected_text = new Text(tabComposite[0], SWT.BORDER);
 			Text edit_text_value = new Text(tabComposite[0], SWT.BORDER);
-			edit_text_value.setBounds(170, 10 + tabFolderViewHeight * 25, 200,
-					20);
+			edit_text_value.setBounds(170, 10 + tabFolderViewHeight * 25, 200, 20);
 			selected_text.setBounds(10, 10 + tabFolderViewHeight * 25, 150, 20);
 			// text += " is\n";
 
@@ -467,7 +507,7 @@ public class View extends ViewPart {
 		fd.setText("Save...");
 		fd.setFilterNames(new String[]{"Java File"});
 		fd.setFilterExtensions(new String[]{"*.java"});
-		fd.setFileName("Test" + subExtension(activity_class));
+		fd.setFileName("Test" + removeFileExtention(activity_class));
 		String fileName = fd.open();
 		
 		if(fileName == null){
@@ -488,13 +528,13 @@ public class View extends ViewPart {
 		}
 	}
 
-	private String subExtension(String fileNameWithExtension) {
-		String filename = "";
+	private String removeFileExtention(String fileNameWithExtension) {
+		String fileName = "";
 		int index = fileNameWithExtension.lastIndexOf(".");
 		if (index != -1) {
-			filename = fileNameWithExtension.substring(0, index);
+			fileName = fileNameWithExtension.substring(0, index);
 		}
-		return filename;
+		return fileName;
 	}
 
 	private void visitAllFiles(ArrayList<File> files, File directory) {
