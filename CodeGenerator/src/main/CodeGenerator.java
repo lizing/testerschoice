@@ -15,7 +15,6 @@ public class CodeGenerator {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		TestCaseTemplate gen = new TestCaseTemplate();
-			
 		ClassSkeleton skeleton = new ClassSkeleton(ACTIVITY_CLASS, PROVIDER_CLASS, AUTHORITY);
 		skeleton.setClassName(TESTCASE_CLASS_NAME);
 		skeleton.setPackageName(PKG);
@@ -40,7 +39,7 @@ public class CodeGenerator {
 		skeleton.setMethod(method3);
 		
 		String file = gen.generate(skeleton);
-		System.out.println(file);
+		//System.out.println(file);
 	}
 
 }
