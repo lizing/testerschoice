@@ -2,15 +2,15 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TestersChoice_Plugin
 Bundle-SymbolicName: TestersChoice_Plugin; singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.0.1
 Bundle-Activator: testerschoice_plugin.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Bundle-ClassPath: .,
- swing2swt.jar
+Bundle-RequiredExecutionEnvironment: J2SE-1.5,
+ JavaSE-1.6,
+ JavaSE-1.7
+Bundle-ClassPath: .
 Export-Package: CodeGen,
  org.eclipse.wb.swt,
- swing2swt.layout,
  testerschoice_plugin

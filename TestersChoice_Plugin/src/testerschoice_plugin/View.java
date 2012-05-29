@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -60,10 +61,12 @@ public class View extends ViewPart {
 
 	String activity_class;
 	String provider_class;
-	String authority = "";
-	String pkg_name = "com.testerschoice.moneybook";
+	String authority;
+	String pkg_name;
 	String testcase_class_name;
 	String[] methodNames;
+	String projectName;
+	String projectPath;
 	
 	Button btn_load;
 	Combo combo_activity, combo_provider, combo_layout_xml;
@@ -83,10 +86,10 @@ public class View extends ViewPart {
 	Label[] label_layout_Text;
 
 	String[][] secuential_id;
-	String[][] secuential_input_value;
+	String[][] sequential_input_value;
 	
 	int tabSize = 0;
-	static int z = 0;
+	static int assertTipFlag = 0;
 
 	// ArrayList<TypeVariable> typeVariable;
 
@@ -115,8 +118,7 @@ public class View extends ViewPart {
 		}
 	}
 
-	class ViewLabelProvider extends LabelProvider implements
-			ITableLabelProvider {
+	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 		public String getColumnText(Object obj, int index) {
 			return getText(obj);
 		}
@@ -136,7 +138,7 @@ public class View extends ViewPart {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
-
+		
 		Composite composite = new Composite(parent, SWT.NONE);
 		tabItem = new TabItem[MAX_TAB_SIZE];
 		tabFolderViewHeight = new int[MAX_TAB_SIZE];
@@ -148,88 +150,96 @@ public class View extends ViewPart {
 		label_layout_Text = new Label[32];
 		view_property = new HashMap<String, String>();
 		
-		secuential_input_value = new String[MAX_TAB_SIZE][32];
+		sequential_input_value = new String[MAX_TAB_SIZE][32];
 		secuential_id = new String[MAX_TAB_SIZE][32];
 		
 		
 		Label lblTargetApplication = new Label(composite, SWT.NONE);
-		lblTargetApplication.setFont(SWTResourceManager.getFont("¸¼Àº°íµñ", 9,
-				SWT.NORMAL));
+		lblTargetApplication.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		lblTargetApplication.setBounds(14, 14, 95, 20);
 		lblTargetApplication.setText("Target App:");
 
 		Label lblActivity = new Label(composite, SWT.NONE);
-		lblActivity.setFont(SWTResourceManager.getFont("¸¼Àº°íµñ", 9, SWT.NORMAL));
+		lblActivity.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		lblActivity.setText("Activity:");
 		lblActivity.setBounds(14, 122, 132, 20);
 
 		Label lblProvider = new Label(composite, SWT.NONE);
-		lblProvider.setFont(SWTResourceManager.getFont("¸¼Àº°íµñ", 9, SWT.NORMAL));
+		lblProvider.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		lblProvider.setText("ContentProvider:");
 		lblProvider.setBounds(14, 148, 132, 20);
 
 		Label lblXml = new Label(composite, SWT.NONE);
-		lblXml.setFont(SWTResourceManager.getFont("¸¼Àº°íµñ", 9, SWT.NORMAL));
+		lblXml.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		lblXml.setText("Layout XML:");
 		lblXml.setBounds(14, 185, 95, 20);
 
 		lbl_app_name = new Label(composite, SWT.NONE);
 		lbl_app_name.setAlignment(SWT.CENTER);
-		lbl_app_name.setFont(SWTResourceManager.getFont("¸¼Àº°íµñ", 9, SWT.NORMAL));
+		lbl_app_name.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		lbl_app_name.setBounds(152, 13, 156, 20);
 		lbl_app_name.setText("Application");
 
 		combo_activity = new Combo(composite, SWT.NONE);
+		combo_activity.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		combo_activity.setBounds(152, 119, 239, 23);
 
 		combo_provider = new Combo(composite, SWT.NONE);
+		combo_provider.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		combo_provider.setBounds(152, 145, 239, 23);
 
 		combo_layout_xml = new Combo(composite, SWT.NONE);
+		combo_layout_xml.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		combo_layout_xml.setBounds(152, 182, 239, 23);
 
 		Label lblPath = new Label(composite, SWT.NONE);
-		lblPath.setFont(SWTResourceManager.getFont("¸¼Àº°íµñ", 9, SWT.NORMAL));
+		lblPath.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		lblPath.setText("Project Path:");
 		lblPath.setBounds(14, 40, 95, 20);
 
 		text_path = new Text(composite, SWT.BORDER);
+		text_path.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		text_path.setBounds(152, 37, 239, 21);
 
 		composite_view_list = new Composite(composite, SWT.NONE);
+		composite_view_list.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		composite_view_list.setBackground(SWTResourceManager
 				.getColor(SWT.COLOR_WHITE));
 		composite_view_list.setBounds(14, 293, 378, 366);
 
 		Button btn_load = new Button(composite, SWT.NONE);
-		btn_load.setFont(SWTResourceManager.getFont("¸¼Àº°íµñ", 9, SWT.NORMAL));
+		btn_load.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		btn_load.setBounds(315, 10, 76, 23);
 		btn_load.setText("Browse...");
 		btn_load.addSelectionListener(new BrowseButtonListener());
 
 		Button btn_fetch = new Button(composite, SWT.NONE);
-		btn_fetch.setFont(SWTResourceManager.getFont("¸¼Àº°íµñ", 9, SWT.NORMAL));
+		btn_fetch.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		btn_fetch.setText("Fetch View(s)");
 		btn_fetch.setBounds(296, 252, 95, 35);
 		btn_fetch.addSelectionListener(new FetchButtonListener());
 
 		tabFolder = new TabFolder(composite, SWT.NONE);
+		tabFolder.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		tabFolder.setBounds(423, 69, 359, 517);
 
 		text_method_name = new Text(composite, SWT.BORDER);
+		text_method_name.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		text_method_name.setBounds(526, 14, 174, 20);
 
 		Button btn_add_method = new Button(composite, SWT.NONE);
+		btn_add_method.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		btn_add_method.setBounds(706, 14, 76, 20);
 		btn_add_method.setText("Create");
 		btn_add_method.addSelectionListener(new NewMethodButtonListener());
 
 		Button btn_generate = new Button(composite, SWT.NONE);
-		btn_generate.setBounds(650, 626, 132, 43);
+		btn_generate.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
+		btn_generate.setBounds(626, 626, 156, 43);
 		btn_generate.setText("Preview Testcase Code");
 
 		Label lblNewLabel = new Label(composite, SWT.NONE);
-		lblNewLabel.setFont(SWTResourceManager.getFont("¸¼Àº°íµñ", 11, SWT.NORMAL));
+		lblNewLabel.setFont(SWTResourceManager.getFont("Arial", 11, SWT.NORMAL));
 		lblNewLabel.setBounds(14, 98, 56, 18);
 		lblNewLabel.setText("Class");
 
@@ -249,20 +259,24 @@ public class View extends ViewPart {
 		label_4.setBounds(408, 4, 2, 655);
 
 		Label lblNewLabel_1 = new Label(composite, SWT.NONE);
+		lblNewLabel_1.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		lblNewLabel_1.setBounds(423, 14, 95, 20);
 		lblNewLabel_1.setText("Method Name:");
 
 		Label lblNewLabel_2 = new Label(composite, SWT.NONE);
+		lblNewLabel_2.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		lblNewLabel_2.setBounds(14, 221, 56, 15);
 		lblNewLabel_2.setText("Authority:");
 
 		text_authority = new Text(composite, SWT.BORDER);
+		text_authority.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		text_authority.setBounds(152, 219, 239, 20);
 
 		Label label_5 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		label_5.setBounds(10, 242, 381, 2);
 
 		Label lblNewLabel_3 = new Label(composite, SWT.NONE);
+		lblNewLabel_3.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		lblNewLabel_3.setBounds(14, 69, 377, 15);
 		lblNewLabel_3.setText("Please Select and Input Information below");
 
@@ -312,7 +326,7 @@ public class View extends ViewPart {
 
 	class BrowseButtonListener implements SelectionListener {
 
-		File selected_directory;
+		File selected_directory, validated_android_project;
 		ArrayList<File> files;
 
 		public void widgetDefaultSelected(SelectionEvent arg0) {
@@ -322,9 +336,6 @@ public class View extends ViewPart {
 
 		public void widgetSelected(SelectionEvent arg0) {
 			// TODO Auto-generated method stub
-			String projectName;
-			String projectPath;
-
 			combo_activity.removeAll();
 			combo_layout_xml.removeAll();
 			combo_provider.removeAll();
@@ -333,18 +344,25 @@ public class View extends ViewPart {
 			dlg.setText("Open...");
 			dlg.setMessage("Open Target App Project");
 			projectPath = dlg.open();
-			text_path.setText(projectPath);
-
-			if (projectPath == null) {
-				// Show Alert Dialog
-
+			
+			if(projectPath == null){
 				return;
 			}
+			
+			text_path.setText(projectPath);
+			
 
 			selected_directory = new File(projectPath);
+			validated_android_project = new File(projectPath + "\\AndroidManifest.xml");
+			
 			projectName = selected_directory.getName();
 			lbl_app_name.setText(projectName);
-
+			
+			if(!validated_android_project.exists()){
+				MessageDialog.openWarning(new Shell(), "Warning", "Please Select an Android Project");
+				this.widgetSelected(arg0);
+			}
+			
 			selected_directory = new File(projectPath + "//src");
 			files = new ArrayList<File>();
 			visitAllFiles(files, selected_directory);
@@ -370,9 +388,8 @@ public class View extends ViewPart {
 					}
 				}
 			}
-			combo_activity.setText("Successful creation of Class list");
-			combo_provider
-					.setText("Successful creation of ContentProvider list");
+			combo_activity.setText("Success To List Activity Classes");
+			combo_provider.setText("Success To List ContentProvider Classes");
 
 			selected_directory = new File(projectPath + "//res");
 			files = new ArrayList<File>();
@@ -384,7 +401,7 @@ public class View extends ViewPart {
 					combo_layout_xml.add(xmlFile);
 				}
 			}
-			combo_layout_xml.setText("Successful creation of XML list");
+			combo_layout_xml.setText("Success To List Layout XML Files");
 		}
 
 	}
@@ -395,54 +412,58 @@ public class View extends ViewPart {
 
 		public void widgetSelected(SelectionEvent arg0) {
 			// TODO Auto-generated method stub
+			
 			activity_class = combo_activity.getText();
 			provider_class = combo_provider.getText();
 			authority = text_authority.getText();
-			testcase_class_name = removeFileExtention(activity_class) + "Test";
+			testcase_class_name = getFileNameWithoutFileExtention(activity_class) + "Test";
+			
+			if(activity_class == "" || provider_class == "" || authority == "" || combo_activity.getItemCount() == 0 || combo_layout_xml.getItemCount() == 0){
+				MessageDialog.openWarning(new Shell(), "Warning", "Please Select a Project First");
+				btn_load.setFocus();
+				return;
+			}
+			
+			AndroidXmlSaxParser buttonParser = new AndroidXmlSaxParser(xmlHash.get(combo_layout_xml.getText()), "Button");
+			AndroidXmlSaxParser editTextParser = new AndroidXmlSaxParser(xmlHash.get(combo_layout_xml.getText()), "EditText");
+			AndroidXmlSaxParser manifestParser = new AndroidXmlSaxParser(projectPath + "\\AndroidManifest.xml", "manifest");
 
-			AndroidXmlSaxParser saxB = new AndroidXmlSaxParser(
-					xmlHash.get(combo_layout_xml.getText()), "Button");
-			AndroidXmlSaxParser saxE = new AndroidXmlSaxParser(
-					xmlHash.get(combo_layout_xml.getText()), "EditText");
-
-			saxB.parse();
-			saxE.parse();
-
-			ArrayList<String> Button_id = saxB.getIdArrayList();
-			ArrayList<String> EditText_id = saxE.getIdArrayList();
-
+			buttonParser.parse();
+			editTextParser.parse();
+			manifestParser.parse();
+			
+			ArrayList<String> Button_id = buttonParser.getIdArrayList();
+			ArrayList<String> EditText_id = editTextParser.getIdArrayList();
+			pkg_name = manifestParser.getPackageName();
+			
 			Text btnType = new Text(composite_view_list, SWT.PUSH);
 			btnType.setBounds(15, 10, 350, 20);
 			btnType.setText("< ButtonType >\t\t\t\t\t< EditTextType >");
 
-			
 			for (int i = 0; i < Button_id.size(); i++) {
-				
 				btn_layout_button[i] = new Button(composite_view_list, SWT.PUSH);
 				btn_layout_button[i].setBounds(10, 40 + i * 25, 35, 20);
 				btn_layout_button[i].setData(Button_id.get(i));
 				btn_layout_button[i].setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgBtnType.jpg"));
-				btn_layout_button[i]
-						.addSelectionListener(new ButtonSelectedListener());
+				btn_layout_button[i].addSelectionListener(new ButtonSelectedListener());
 
-				label_layout_button[i] = new Label(composite_view_list,
-						SWT.PUSH);
+				label_layout_button[i] = new Label(composite_view_list, SWT.PUSH);
 				label_layout_button[i].setBounds(50, 40 + i * 25, 130, 20);
 				label_layout_button[i].setText(Button_id.get(i));
-
 			}
+			
 			for (int i = 0; i < EditText_id.size(); i++) {
-
 				text_layout_Text[i] = new Button(composite_view_list, SWT.PUSH);
 				text_layout_Text[i].setBounds(190, 40 + i * 25, 35, 20);
 				text_layout_Text[i].setData(EditText_id.get(i));
 				text_layout_Text[i].setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgTextType.jpg"));
-				text_layout_Text[i]
-						.addSelectionListener(new TextSelectedListener());
+				text_layout_Text[i].addSelectionListener(new TextSelectedListener());
 				label_layout_Text[i] = new Label(composite_view_list, SWT.PUSH);
 				label_layout_Text[i].setBounds(230, 40 + i * 25, 130, 20);
 				label_layout_Text[i].setText(EditText_id.get(i));
 			}
+			
+			text_method_name.setFocus();
 		}
 
 		public void widgetDefaultSelected(SelectionEvent e) {
@@ -461,31 +482,27 @@ public class View extends ViewPart {
 
 		public void widgetSelected(SelectionEvent arg0) {
 			// TODO Auto-generated method stub
-
 			TestCaseTemplate gen = new TestCaseTemplate();
-			String activity_name = removeFileExtention(activity_class);
-			String provider_name = removeFileExtention(provider_class);
+			String activity_name = getFileNameWithoutFileExtention(activity_class);
+			String provider_name = getFileNameWithoutFileExtention(provider_class);
 
-			ClassSkeleton skeleton = new ClassSkeleton(activity_name,
-					provider_name, authority);
+			ClassSkeleton skeleton = new ClassSkeleton(activity_name, provider_name, authority);
 			skeleton.setClassName(testcase_class_name);
 			skeleton.setPackageName(pkg_name);
 	
 			for(int i=0; i<tabSize; i++){
-				MethodSkeleton method1 = new MethodSkeleton();
-				method1.setMethodName(methodNames[i]);
-	
+				MethodSkeleton method = new MethodSkeleton();
+				method.setMethodName(methodNames[i]);
+				
 				for (int j = 0; j < tabFolderViewHeight[i]; j++) {
-					String s = secuential_input_value[i][j];
+					String s = sequential_input_value[i][j];
 					if (s != null)
-						method1.setVariable(MethodSkeleton.EDIT_TEXT, secuential_id[i][j], secuential_input_value[i][j]);
+						method.setVariable(MethodSkeleton.EDIT_TEXT, secuential_id[i][j], sequential_input_value[i][j]);
 					else
-						method1.setVariable(MethodSkeleton.BUTTON, secuential_id[i][j], null);
+						method.setVariable(MethodSkeleton.BUTTON, secuential_id[i][j], null);
 				}
-	
-				skeleton.setMethod(method1);
+				skeleton.setMethod(method);
 			}
-			
 			
 			String file = gen.generate(skeleton);
 			
@@ -523,7 +540,8 @@ public class View extends ViewPart {
 					"static void assertTrue(String message, boolean condition)",
 					"static void assertTrue(boolean condition)"
 			};
-			String [] toolTipassertContents = {
+			
+			String [] toolTipAssertContents = {
 					"Asserts that two shorts are equal.",
 					"Asserts that two ints are equal.",
 					"Asserts that two shorts are equal.",
@@ -558,11 +576,11 @@ public class View extends ViewPart {
 					"Asserts that a condition is true.",
 			};
 			
-			Shell pick = new Shell();
-			pick.setText("Preview");
+			Shell previewShell = new Shell();
+			previewShell.setText("Preview");
 		
 			
-			final Table table = new Table(pick, SWT.BORDER | SWT.FULL_SELECTION);
+			final Table table = new Table(previewShell, SWT.BORDER | SWT.FULL_SELECTION);
 			table.setBounds(10, 5, 700, 120);
 			table.setHeaderVisible(true);
 			table.setLinesVisible(true);
@@ -576,94 +594,95 @@ public class View extends ViewPart {
 				tableItem.setText(assertContents[i]);
 			}
 			
-			final StyledText text = new StyledText(pick,  SWT.BORDER &SWT.SHELL_TRIM| SWT.V_SCROLL|SWT.H_SCROLL);
+			final StyledText text = new StyledText(previewShell,  SWT.BORDER &SWT.SHELL_TRIM| SWT.V_SCROLL|SWT.H_SCROLL);
 			text.setEditable(true);
 			text.setText(file);
 			text.setBounds(10, 30, 700, 650);
-			final Button showTip = new Button(pick, SWT.NONE);
+			final Button showTip = new Button(previewShell, SWT.NONE);
 			showTip.setBounds(660, 5, 30, 20);
 			showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/showTip.jpg"));
-			showTip.setToolTipText(" \"assert()\" ¹®¿¡ °üÇÑ TipÀ» º¸¿©ÁÝ´Ï´Ù ");
+			showTip.setToolTipText(" \"assert()\" Tooltip C ");
 			
 			
-			Button confirm = new Button(pick, SWT.NONE);
+			Button confirm = new Button(previewShell, SWT.NONE);
 			confirm.setText("Generate");
 			confirm.setBounds(590, 680, 100, 30);
 			
 			
-			pick.setSize(700, 730);
-			pick.pack();
-			pick.open();
+			previewShell.setSize(700, 730);
+			previewShell.pack();
+			previewShell.open();
 			
-			showTip.addSelectionListener(new SelectionListener() {
-				
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					// TODO Auto-generated method stub
-					if(z%2 == 0){
-						text.setBounds(10, 160, 700, 520);
-						//tipView.setVisible(true);
-						table.setVisible(true);
-						showTip.setBounds(660, 135, 30, 20);
-						showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/hideTip.jpg"));
-						showTip.setToolTipText(" \"assert()\" ¹®¿¡ °üÇÑ TipÀ» ¼û±é´Ï´Ù ");
-					}
-					else{
-						text.setBounds(10, 30, 700, 650);
-						//tipView.setVisible(false);
-						table.setVisible(false);
-						showTip.setBounds(660, 5, 30, 20);
-						showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/showTip.jpg"));
-						showTip.setToolTipText(" \"assert()\" ¹®¿¡ °üÇÑ TipÀ» º¸¿©ÁÝ´Ï´Ù ");
-					}
-					z++;
-				}
-				
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-			});
-			showTip.addFocusListener(new FocusListener() {
-				
-				@Override
-				public void focusLost(FocusEvent e) {
-					// TODO Auto-generated method stub
-					if(z%2 == 0)
-						showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/showTip.jpg"));
-					else
-						showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/hideTip.jpg"));
-				}
-				
-				@Override
-				public void focusGained(FocusEvent e) {
-					// TODO Auto-generated method stub
-					if(z%2 == 0)
-						showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/showTipFocus.jpg"));
-					else
-						showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/hideTipFocus.jpg"));
-				}
-			});
-			confirm.addSelectionListener(new SelectionListener() {
-				
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					// TODO Auto-generated method stub
-					writeFile(text.getText());
-				}
-				
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-			});
-			
-			
-
+			showTip.addSelectionListener(new ShowTooltipListener(text, table, showTip));
+			confirm.addSelectionListener(new ConfirmButtonListener(previewShell, text));
 		}
 
+	}
+	
+	class ConfirmButtonListener implements SelectionListener{
+
+		StyledText text;
+		Shell shell;
+		
+		public ConfirmButtonListener(Shell shell, StyledText text){
+			this.text = text;
+			this.shell = shell;
+		}
+		
+		
+		public void widgetSelected(SelectionEvent e) {
+			// TODO Auto-generated method stub
+			if(writeFile(text.getText()))
+				shell.close();
+		}
+
+		
+		public void widgetDefaultSelected(SelectionEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+	
+	class ShowTooltipListener implements SelectionListener{
+
+		StyledText text;
+		Table table;
+		Button showTip;
+		
+		public ShowTooltipListener(StyledText text, Table table, Button showTip){
+			this.text = text;
+			this.table = table;
+			this.showTip = showTip;
+		}
+
+		
+		public void widgetSelected(SelectionEvent e) {
+			// TODO Auto-generated method stub
+			if(assertTipFlag % 2 == 0){
+				text.setBounds(10, 160, 700, 520);
+				//tipView.setVisible(true);
+				table.setVisible(true);
+				showTip.setBounds(660, 135, 30, 20);
+				showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/hideTip.jpg"));
+				showTip.setToolTipText(" \"assert()\" Tooltip A");
+			}
+			else{
+				text.setBounds(10, 30, 700, 650);
+				//tipView.setVisible(false);
+				table.setVisible(false);
+				showTip.setBounds(660, 5, 30, 20);
+				showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/showTip.jpg"));
+				showTip.setToolTipText(" \"assert()\" Tooltip B");
+			}
+			
+			assertTipFlag++;
+		}
+
+		
+		public void widgetDefaultSelected(SelectionEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 
 	class ButtonSelectedListener implements SelectionListener {
@@ -679,19 +698,14 @@ public class View extends ViewPart {
 			btn.setBounds(5, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 35, 20);
 			btn.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgBtnType.jpg"));
 			
-			String text = tabFolderViewHeight[tabFolder.getSelectionIndex()] + ". "
-					+ (String) arg0.widget.getData();
-			
-			
+			String text = tabFolderViewHeight[tabFolder.getSelectionIndex()] + ". "	+ (String) arg0.widget.getData();
 			
 			Label selected_text = new Label(tabComposite[tabFolder.getSelectionIndex()], SWT.BORDER);
 			selected_text.setBounds(40, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 150, 20);
-			// text += " is clicked.\n";
 			selected_text.setText(text);
 			
 			secuential_id[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String) arg0.widget.getData();
-			secuential_input_value[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = null;
-			
+			sequential_input_value[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = null;
 			
 			tabFolderViewHeight[tabFolder.getSelectionIndex()]++;
 		}
@@ -699,6 +713,8 @@ public class View extends ViewPart {
 
 	class TextSelectedListener implements SelectionListener {
 
+		Text edit_text_value;
+		
 		public void widgetDefaultSelected(SelectionEvent arg0) {
 			// TODO Auto-generated method stub
 		}
@@ -709,44 +725,62 @@ public class View extends ViewPart {
 			btn.setBounds(5, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 35, 20);
 			btn.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgTextType.jpg"));
 			
-			String text = tabFolderViewHeight[tabFolder.getSelectionIndex()] + ". "
-					+ (String) arg0.widget.getData();
+			String text = tabFolderViewHeight[tabFolder.getSelectionIndex()] + ". "	+ (String) arg0.widget.getData();
 			Label selected_text = new Label(tabComposite[tabFolder.getSelectionIndex()], SWT.BORDER);
 			selected_text.setBounds(40, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 150, 20);
 
-			Text edit_text_value = new Text(tabComposite[tabFolder.getSelectionIndex()], SWT.BORDER);
-			edit_text_value.setBounds(195, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 150,
-					20);
+			edit_text_value = new Text(tabComposite[tabFolder.getSelectionIndex()], SWT.BORDER);
+			edit_text_value.setBounds(195, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 150, 20);
 			//edit_text_value.setText("Input the value");
 			edit_text_value.setForeground(edit_text_value.getDisplay().getSystemColor(SWT.COLOR_BLUE));
+			edit_text_value.addFocusListener(new TextWidgetFocusListener(edit_text_value));
 			
-				
 			selected_text.setText(text);
 			
 			secuential_id[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String) arg0.widget.getData();
-			secuential_input_value[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String)edit_text_value.getText();
-			
-			
+			//sequential_input_value[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String)edit_text_value.getText();
 			
 			edit_text_value.forceFocus();
 			tabFolderViewHeight[tabFolder.getSelectionIndex()]++;
 		}
 
 	}
+	
+	class TextWidgetFocusListener implements FocusListener{
 
-	private void writeFile(String text) {
+		Text text;
+		
+		public TextWidgetFocusListener(Text text) {
+			this.text = text;
+		}
+		
+		public void focusGained(FocusEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
 
+		public void focusLost(FocusEvent e) {
+			// TODO Auto-generated method stub
+			Text selectedWidget = (Text)e.getSource();
+			int selectedIndex = (selectedWidget.getLocation().y - 10) / 25;
+			sequential_input_value[tabFolder.getSelectionIndex()][selectedIndex] = (String)text.getText();
+			//sequential_input_value[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String)edit_text_value.getText();
+		}
+		
+	}
+
+	private boolean writeFile(String text) {
 		FileDialog fd = new FileDialog(new Shell(), SWT.SAVE);
 		fd.setText("Save...");
 		fd.setFilterNames(new String[] { "Java File" });
 		fd.setFilterExtensions(new String[] { "*.java" });
-		fd.setFileName(removeFileExtention(activity_class) + "Test" );
+		fd.setFileName(getFileNameWithoutFileExtention(activity_class) + "Test" );
 		String fileName = fd.open();
 
 		if (fileName == null) {
 			// Show Alert Dialog
 
-			return;
+			return false;
 		}
 
 		File file = new File(fileName);
@@ -758,10 +792,13 @@ public class View extends ViewPart {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		}
+		
+		return true;
 	}
 
-	private String removeFileExtention(String fileNameWithExtension) {
+	private String getFileNameWithoutFileExtention(String fileNameWithExtension) {
 		String fileName = "";
 		int index = fileNameWithExtension.lastIndexOf(".");
 		if (index != -1) {
@@ -783,7 +820,6 @@ public class View extends ViewPart {
 	}
 
 	public String getSuperClass(String file) throws IOException{
-		
 		File f = new File(file);
 		BufferedReader br = null;
 		try{
@@ -798,7 +834,7 @@ public class View extends ViewPart {
 		String s;
 		
 		while((s = br.readLine())!=null){
-			if(s.contains(removeFileExtention(f.getName())) && s.contains("class") ){
+			if(s.contains(getFileNameWithoutFileExtention(f.getName())) && s.contains("class") ){
 				if(s.contains("extends")){
 					if(s.contains("Activity")){
 						superClassName = "Activity";

@@ -16,7 +16,7 @@ public class AndroidXmlSaxParser extends DefaultHandler {
 
 	
 	//final static String filename = "C:\\Yeon_Sik\\prj\\HouseholdBook2\\res\\layout\\addpage.xml";
-	String filename,elementName;
+	String filename,elementName, pkg;
 	ArrayList<String> idList = new ArrayList<String>();
 	ArrayList<String> typeList = new ArrayList<String>();
 	SAXParserFactory factory;
@@ -27,6 +27,7 @@ public class AndroidXmlSaxParser extends DefaultHandler {
 		
 		this.filename = filename;
 		this.elementName = elementName;
+		this.pkg = null;
 		
 		factory = SAXParserFactory.newInstance();
 		try {
@@ -54,8 +55,17 @@ public class AndroidXmlSaxParser extends DefaultHandler {
 						String value = attributes.getValue(i);
 						idList.add(getRealId(value));
 					}
+					
+					if(name.equals("package")){
+						String value = attributes.getValue(i);
+						pkg = value;
+					}
 				}		
 		}
+	}
+	
+	public String getPackageName(){
+		return pkg;
 	}
 	
 	public String getRealId(String value){
