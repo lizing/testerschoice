@@ -1,10 +1,7 @@
 package testerschoice_plugin;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +13,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
@@ -28,6 +27,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -55,11 +57,11 @@ public class View extends ViewPart {
 
 	String activity_class;
 	String provider_class;
-	String authority = "com.testerschoice.provider.MoneyBook";
+	String authority = "";
 	String pkg_name = "com.testerschoice.moneybook";
 	String testcase_class_name;
-	String method_name;
-
+	String[] methodNames;
+	
 	Button btn_load;
 	Combo combo_activity, combo_provider, combo_layout_xml;
 	Label lbl_app_name;
@@ -67,9 +69,9 @@ public class View extends ViewPart {
 	TabFolder tabFolder;
 	TabItem[] tabItem;
 	Composite[] tabComposite;
-	String[] methodNames;
+	
 
-	static int tabFolderViewHeight = 0;
+	static int[] tabFolderViewHeight;
 
 	HashMap<String, String> view_property;
 	Button[] btn_layout_button;
@@ -78,14 +80,18 @@ public class View extends ViewPart {
 	Label[] label_layout_Text;
 	ArrayList<Text> secuential_input_value;
 	ArrayList<String> secuential_id;
-	int tabSize = 0;
 
+	String[][] secuential_id1;
+	String[][] secuential_input_value1;
+	
+	int tabSize = 0;
+	static int z = 0;
 
 	// ArrayList<TypeVariable> typeVariable;
 
 	HashMap<String, String> xmlHash = new HashMap<String, String>();
 	private Text text_authority;
-
+	
 	/**
 	 * The content provider class is responsible for providing objects to the
 	 * view. It can wrap existing objects in adapters or simply return objects
@@ -132,6 +138,7 @@ public class View extends ViewPart {
 
 		Composite composite = new Composite(parent, SWT.NONE);
 		tabItem = new TabItem[MAX_TAB_SIZE];
+		tabFolderViewHeight = new int[MAX_TAB_SIZE];
 		tabComposite = new Composite[MAX_TAB_SIZE];
 		methodNames = new String[MAX_TAB_SIZE];
 		btn_layout_button = new Button[16];
@@ -142,6 +149,8 @@ public class View extends ViewPart {
 		secuential_input_value = new ArrayList<Text>();
 		secuential_id = new ArrayList<String>();
 		
+		secuential_input_value1 = new String[MAX_TAB_SIZE][32];
+		secuential_id1 = new String[MAX_TAB_SIZE][32];
 		
 		
 		Label lblTargetApplication = new Label(composite, SWT.NONE);
@@ -294,12 +303,10 @@ public class View extends ViewPart {
 				tabComposite[tabSize] = new Composite(tabFolder, SWT.PUSH);
 				tabItem[tabSize].setControl(tabComposite[tabSize]);
 				methodNames[tabSize] = text_method_name.getText();
-				method_name = text_method_name.getText();
 				tabItem[tabSize].setText(methodNames[tabSize]);
 				tabSize++;
-
 			}
-
+			text_method_name.setText("");
 		}
 
 	}
@@ -346,7 +353,6 @@ public class View extends ViewPart {
 			for (File f : files) {
 				String javaFile = f.getName();
 				if (javaFile.endsWith(".java")) {
-					
 					/* 연식 - Activity와 Provider 자바파일만 따로따로 넣는 거 해보는중
 					 * try {
 						int d = fileReads(f);
@@ -471,37 +477,198 @@ public class View extends ViewPart {
 					provider_name, authority);
 			skeleton.setClassName(testcase_class_name);
 			skeleton.setPackageName(pkg_name);
-
-			MethodSkeleton method1 = new MethodSkeleton();
-			method1.setMethodName(method_name);
-
-			for (int i = 0; i < tabFolderViewHeight; i++) {
-				if (secuential_input_value.get(i) != null)
-					method1.setVariable(MethodSkeleton.EDIT_TEXT, secuential_id
-							.get(i), secuential_input_value.get(i).getText());
-				else
-					method1.setVariable(MethodSkeleton.EDIT_TEXT,
-							secuential_id.get(i), null);
+	
+			for(int i=0; i<tabSize; i++){
+				MethodSkeleton method1 = new MethodSkeleton();
+				method1.setMethodName(methodNames[i]);
+	
+				
+				for (int j = 0; j < tabFolderViewHeight[i]; j++) {
+					if (secuential_input_value1[i][j] != null)
+						method1.setVariable(MethodSkeleton.EDIT_TEXT, secuential_id1[i][j], secuential_input_value1[i][j]);
+					else
+						method1.setVariable(MethodSkeleton.EDIT_TEXT, secuential_id1[i][j], null);
+				}
+	
+				skeleton.setMethod(method1);
 			}
-
-			skeleton.setMethod(method1);
-
+			
+			/*		
+			for(int i=0; i<tabSize; i++){
+				MethodSkeleton method1 = new MethodSkeleton();
+				method1.setMethodName(methodNames[tabSize]);
+	
+				
+				for (int j = 0; j < tabFolderViewHeight[i]; j++) {
+					if (secuential_input_value.get(j) != null)
+						method1.setVariable(MethodSkeleton.EDIT_TEXT, secuential_id
+								.get(j), secuential_input_value.get(j).getText());
+					else
+						method1.setVariable(MethodSkeleton.EDIT_TEXT,
+								secuential_id.get(j), null);
+				}
+	
+				skeleton.setMethod(method1);
+			}
+			 */	
 			String file = gen.generate(skeleton);
+			
+			String [] assertContents = {
+					"static void assertEquals(short expected, short actual)",
+					"static void assertEquals(String message, int expected, int actual)",
+					"static void assertEquals(String message, short expected, short actual)",
+					"static void assertEquals(char expected, char actual)",
+					"static void assertEquals(String message, String expected, String actual)",
+					"static void assertEquals(int expected, int actual)",
+					"static void assertEquals(String message, double expected, double actual, double delta)",
+					"static void assertEquals(String message, long expected, long actual)",
+					"static void assertEquals(byte expected, byte actual)",
+					"static void assertEquals(Object expected, Object actual)",
+					"static void assertEquals(boolean expected, boolean actual)",
+					"static void assertEquals(String message, float expected, float actual, float delta)",
+					"static void assertEquals(String message, boolean expected, boolean actual)",
+					"static void assertEquals(String expected, String actual)",
+					"static void assertEquals(float expected, float actual, float delta)",
+					"static void assertEquals(String message, byte expected, byte actual)",
+					"static void assertEquals(double expected, double actual, double delta)",
+					"static void assertEquals(String message, char expected, char actual)",
+					"static void assertEquals(String message, Object expected, Object actual)",
+					"static void assertEquals(long expected, long actual)",
+					"static void assertFalse(String message, boolean condition)",
+					"static void assertFalse(boolean condition)",
+					"static void assertNotNull(String message, Object object)",
+					"static void assertNotNull(Object object)",
+					"static void assertNotSame(Object expected, Object actual)",
+					"static void assertNotSame(String message, Object expected, Object actual)",
+					"static void assertNull(Object object)",
+					"static void assertNull(String message, Object object)",
+					"static void assertSame(Object expected, Object actual)",
+					"static void assertSame(String message, Object expected, Object actual)",
+					"static void assertTrue(String message, boolean condition)",
+					"static void assertTrue(boolean condition)"
+			};
+			String [] toolTipassertContents = {
+					"Asserts that two shorts are equal.",
+					"Asserts that two ints are equal.",
+					"Asserts that two shorts are equal.",
+					"Asserts that two chars are equal.",
+					"Asserts that two Strings are equal.",
+					"Asserts that two ints are equal.",
+					"Asserts that two doubles are equal concerning a delta.",
+					"Asserts that two longs are equal.",
+					"Asserts that two bytes are equal.",
+					"Asserts that two objects are equal.",
+					"Asserts that two booleans are equal.",
+					"Asserts that two floats are equal concerning a delta.",
+					"Asserts that two booleans are equal.",
+					"Asserts that two Strings are equal.",
+					"Asserts that two floats are equal concerning a delta.",
+					"Asserts that two bytes are equal.",
+					"Asserts that two doubles are equal concerning a delta.",
+					"Asserts that two chars are equal.",
+					"Asserts that two objects are equal.",
+					"Asserts that two longs are equal.",
+					"Asserts that a condition is false.",
+					"Asserts that a condition is false.",
+					"Asserts that an object isn't null.",
+					"sserts that an object isn't null.",
+					"Asserts that two objects do not refer to the same object.",
+					"Asserts that two objects do not refer to the same object.",
+					"Asserts that an object is null.",
+					"Asserts that an object is null.",
+					"Asserts that two objects refer to the same object.",
+					"Asserts that two objects refer to the same object.",
+					"Asserts that a condition is true.",
+					"Asserts that a condition is true.",
+			};
 			
 			Shell pick = new Shell();
 			pick.setText("Preview");
-			final StyledText text = new StyledText(pick,  SWT.BORDER & SWT.V_SCROLL&SWT.H_SCROLL);
+		
+			
+			final Table table = new Table(pick, SWT.BORDER | SWT.FULL_SELECTION);
+			table.setBounds(10, 5, 700, 120);
+			table.setHeaderVisible(true);
+			table.setLinesVisible(true);
+			table.setVisible(false);
+			TableColumn tblclmnNewColumn = new TableColumn(table, SWT.CENTER);
+			tblclmnNewColumn.setWidth(680);
+			tblclmnNewColumn.setText("Assert Methods Tip...");
+
+			for(int i=0; i<assertContents.length; i++){
+				TableItem tableItem = new TableItem(table, SWT.NONE);
+				tableItem.setText(assertContents[i]);
+			}
+			
+			final StyledText text = new StyledText(pick,  SWT.BORDER &SWT.SHELL_TRIM| SWT.V_SCROLL|SWT.H_SCROLL);
 			text.setEditable(true);
 			text.setText(file);
-			text.setSize(700, 650);
+			text.setBounds(10, 30, 700, 650);
+			final Button showTip = new Button(pick, SWT.NONE);
+			showTip.setBounds(660, 5, 30, 20);
+			showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/showTip.jpg"));
+			showTip.setToolTipText(" \"assert()\" 문에 관한 Tip을 보여줍니다 ");
+			
+			
 			Button confirm = new Button(pick, SWT.NONE);
 			confirm.setText("Generate");
-			confirm.setSize(130, 30);
-			confirm.setLocation(590, 650);
-			pick.setSize(700, 700);
+			confirm.setBounds(590, 680, 100, 30);
+			
+			
+			pick.setSize(700, 730);
 			pick.pack();
 			pick.open();
 			
+			showTip.addSelectionListener(new SelectionListener() {
+				
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					// TODO Auto-generated method stub
+					if(z%2 == 0){
+						text.setBounds(10, 160, 700, 520);
+						//tipView.setVisible(true);
+						table.setVisible(true);
+						showTip.setBounds(660, 135, 30, 20);
+						showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/hideTip.jpg"));
+						showTip.setToolTipText(" \"assert()\" 문에 관한 Tip을 숨깁니다 ");
+					}
+					else{
+						text.setBounds(10, 30, 700, 650);
+						//tipView.setVisible(false);
+						table.setVisible(false);
+						showTip.setBounds(660, 5, 30, 20);
+						showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/showTip.jpg"));
+						showTip.setToolTipText(" \"assert()\" 문에 관한 Tip을 보여줍니다 ");
+					}
+					z++;
+				}
+				
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+			showTip.addFocusListener(new FocusListener() {
+				
+				@Override
+				public void focusLost(FocusEvent e) {
+					// TODO Auto-generated method stub
+					if(z%2 == 0)
+						showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/showTip.jpg"));
+					else
+						showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/hideTip.jpg"));
+				}
+				
+				@Override
+				public void focusGained(FocusEvent e) {
+					// TODO Auto-generated method stub
+					if(z%2 == 0)
+						showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/showTipFocus.jpg"));
+					else
+						showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/hideTipFocus.jpg"));
+				}
+			});
 			confirm.addSelectionListener(new SelectionListener() {
 				
 				@Override
@@ -533,21 +700,26 @@ public class View extends ViewPart {
 		public void widgetSelected(SelectionEvent arg0) {
 			// TODO Auto-generated method stub
 			Button btn = new Button(tabComposite[tabFolder.getSelectionIndex()], SWT.BORDER);
-			btn.setBounds(5, 10 + tabFolderViewHeight * 25, 35, 20);
+			btn.setBounds(5, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 35, 20);
 			btn.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgBtnType.jpg"));
 			
-			String text = tabFolderViewHeight + ". "
+			String text = tabFolderViewHeight[tabFolder.getSelectionIndex()] + ". "
 					+ (String) arg0.widget.getData();
 			
 			
 			
 			Label selected_text = new Label(tabComposite[tabFolder.getSelectionIndex()], SWT.BORDER);
-			selected_text.setBounds(40, 10 + tabFolderViewHeight * 25, 150, 20);
+			selected_text.setBounds(40, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 150, 20);
 			// text += " is clicked.\n";
 			selected_text.setText(text);
-			secuential_id.add((String) arg0.widget.getData());
-			secuential_input_value.add(null);
-			tabFolderViewHeight++;
+			
+			secuential_id1[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String) arg0.widget.getData();
+			secuential_input_value1[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = null;
+			
+			
+			//secuential_id.add((String) arg0.widget.getData());
+			//secuential_input_value.add(null);
+			tabFolderViewHeight[tabFolder.getSelectionIndex()]++;
 		}
 	}
 
@@ -559,27 +731,32 @@ public class View extends ViewPart {
 
 		public void widgetSelected(SelectionEvent arg0) {
 			// TODO Auto-generated method stub
-			Button btn = new Button(tabComposite[0], SWT.BORDER);
-			btn.setBounds(5, 10 + tabFolderViewHeight * 25, 35, 20);
+			Button btn = new Button(tabComposite[tabFolder.getSelectionIndex()], SWT.BORDER);
+			btn.setBounds(5, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 35, 20);
 			btn.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgTextType.jpg"));
 			
-			String text = tabFolderViewHeight + ". "
+			String text = tabFolderViewHeight[tabFolder.getSelectionIndex()] + ". "
 					+ (String) arg0.widget.getData();
-			Label selected_text = new Label(tabComposite[0], SWT.BORDER);
-			selected_text.setBounds(40, 10 + tabFolderViewHeight * 25, 150, 20);
+			Label selected_text = new Label(tabComposite[tabFolder.getSelectionIndex()], SWT.BORDER);
+			selected_text.setBounds(40, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 150, 20);
 
-			Text edit_text_value = new Text(tabComposite[0], SWT.BORDER);
-			edit_text_value.setBounds(195, 10 + tabFolderViewHeight * 25, 150,
+			Text edit_text_value = new Text(tabComposite[tabFolder.getSelectionIndex()], SWT.BORDER);
+			edit_text_value.setBounds(195, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 150,
 					20);
 			//edit_text_value.setText("Input the value");
 			edit_text_value.setForeground(edit_text_value.getDisplay().getSystemColor(SWT.COLOR_BLUE));
 			
 				
 			selected_text.setText(text);
-			secuential_id.add((String) arg0.widget.getData());
-			secuential_input_value.add(edit_text_value);
+			
+			secuential_id1[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String) arg0.widget.getData();
+			secuential_input_value1[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = null;
+			
+			
+			//secuential_id.add((String) arg0.widget.getData());
+			//secuential_input_value.add(edit_text_value);
 			edit_text_value.forceFocus();
-			tabFolderViewHeight++;
+			tabFolderViewHeight[tabFolder.getSelectionIndex()]++;
 		}
 
 	}
