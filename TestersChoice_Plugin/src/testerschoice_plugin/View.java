@@ -1,7 +1,10 @@
 package testerschoice_plugin;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -78,11 +81,9 @@ public class View extends ViewPart {
 	Button[] text_layout_Text;
 	Label[] label_layout_button;
 	Label[] label_layout_Text;
-	ArrayList<Text> secuential_input_value;
-	ArrayList<String> secuential_id;
 
-	String[][] secuential_id1;
-	String[][] secuential_input_value1;
+	String[][] secuential_id;
+	String[][] secuential_input_value;
 	
 	int tabSize = 0;
 	static int z = 0;
@@ -146,11 +147,9 @@ public class View extends ViewPart {
 		label_layout_button = new Label[16];
 		label_layout_Text = new Label[32];
 		view_property = new HashMap<String, String>();
-		secuential_input_value = new ArrayList<Text>();
-		secuential_id = new ArrayList<String>();
 		
-		secuential_input_value1 = new String[MAX_TAB_SIZE][32];
-		secuential_id1 = new String[MAX_TAB_SIZE][32];
+		secuential_input_value = new String[MAX_TAB_SIZE][32];
+		secuential_id = new String[MAX_TAB_SIZE][32];
 		
 		
 		Label lblTargetApplication = new Label(composite, SWT.NONE);
@@ -353,28 +352,22 @@ public class View extends ViewPart {
 			for (File f : files) {
 				String javaFile = f.getName();
 				if (javaFile.endsWith(".java")) {
-					/* 연식 - Activity와 Provider 자바파일만 따로따로 넣는 거 해보는중
-					 * try {
-						int d = fileReads(f);
-						if (d == ACTIVITY) {
-							System.out.println(ccc+"  fileRead(f) == ACTIVITY");
-							combo_activity.add(javaFile);
-						} else if (d == PROVIDER) {
-							System.out.println(ccc+"  fileRead(f) == PROVIDER");
-							combo_provider.add(javaFile);
-						}
-					} catch (ClassNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					String superClassName = null;
+					try {
+						superClassName = getSuperClass(f.getAbsolutePath());
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					System.out.println(ccc+"  마지막");
-*/
-					 combo_activity.add(javaFile);
-					 combo_provider.add(javaFile);
-
+					
+					if(superClassName != null){
+						if(superClassName.equals("Activity"))
+							combo_activity.add(javaFile);
+						else if(superClassName.equals("ContentProvider"))
+							combo_provider.add(javaFile);
+						else
+							continue;
+					}
 				}
 			}
 			combo_activity.setText("Successful creation of Class list");
@@ -482,35 +475,18 @@ public class View extends ViewPart {
 				MethodSkeleton method1 = new MethodSkeleton();
 				method1.setMethodName(methodNames[i]);
 	
-				
 				for (int j = 0; j < tabFolderViewHeight[i]; j++) {
-					if (secuential_input_value1[i][j] != null)
-						method1.setVariable(MethodSkeleton.EDIT_TEXT, secuential_id1[i][j], secuential_input_value1[i][j]);
+					String s = secuential_input_value[i][j];
+					if (s != null)
+						method1.setVariable(MethodSkeleton.EDIT_TEXT, secuential_id[i][j], secuential_input_value[i][j]);
 					else
-						method1.setVariable(MethodSkeleton.EDIT_TEXT, secuential_id1[i][j], null);
+						method1.setVariable(MethodSkeleton.BUTTON, secuential_id[i][j], null);
 				}
 	
 				skeleton.setMethod(method1);
 			}
 			
-			/*		
-			for(int i=0; i<tabSize; i++){
-				MethodSkeleton method1 = new MethodSkeleton();
-				method1.setMethodName(methodNames[tabSize]);
-	
-				
-				for (int j = 0; j < tabFolderViewHeight[i]; j++) {
-					if (secuential_input_value.get(j) != null)
-						method1.setVariable(MethodSkeleton.EDIT_TEXT, secuential_id
-								.get(j), secuential_input_value.get(j).getText());
-					else
-						method1.setVariable(MethodSkeleton.EDIT_TEXT,
-								secuential_id.get(j), null);
-				}
-	
-				skeleton.setMethod(method1);
-			}
-			 */	
+			
 			String file = gen.generate(skeleton);
 			
 			String [] assertContents = {
@@ -713,12 +689,10 @@ public class View extends ViewPart {
 			// text += " is clicked.\n";
 			selected_text.setText(text);
 			
-			secuential_id1[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String) arg0.widget.getData();
-			secuential_input_value1[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = null;
+			secuential_id[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String) arg0.widget.getData();
+			secuential_input_value[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = null;
 			
 			
-			//secuential_id.add((String) arg0.widget.getData());
-			//secuential_input_value.add(null);
 			tabFolderViewHeight[tabFolder.getSelectionIndex()]++;
 		}
 	}
@@ -749,12 +723,11 @@ public class View extends ViewPart {
 				
 			selected_text.setText(text);
 			
-			secuential_id1[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String) arg0.widget.getData();
-			secuential_input_value1[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = null;
+			secuential_id[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String) arg0.widget.getData();
+			secuential_input_value[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String)edit_text_value.getText();
 			
 			
-			//secuential_id.add((String) arg0.widget.getData());
-			//secuential_input_value.add(edit_text_value);
+			
 			edit_text_value.forceFocus();
 			tabFolderViewHeight[tabFolder.getSelectionIndex()]++;
 		}
@@ -767,7 +740,7 @@ public class View extends ViewPart {
 		fd.setText("Save...");
 		fd.setFilterNames(new String[] { "Java File" });
 		fd.setFilterExtensions(new String[] { "*.java" });
-		fd.setFileName("Test" + removeFileExtention(activity_class));
+		fd.setFileName(removeFileExtention(activity_class) + "Test" );
 		String fileName = fd.open();
 
 		if (fileName == null) {
@@ -796,77 +769,7 @@ public class View extends ViewPart {
 		}
 		return fileName;
 	}
-	/* 연식 - Activity와 Provider 자바파일만 따로따로 넣는 거 해보는중
-	public static int fileReads(File f) throws ClassNotFoundException, IOException{
-		
-		BufferedReader br = new BufferedReader(new InputStreamReader(
-				new FileInputStream(f.getAbsoluteFile()), "UTF8"));
-		String[] data;
-
-		int count = 0;
-		String temp;
-
-		while ((temp = br.readLine()) != null) {
-			data = new String[100];
-			StringTokenizer st = new StringTokenizer(temp);
-
-			while (st.hasMoreTokens()) {
-				data[count] = st.nextToken();
-				// System.out.println(data[count]);
-
-				count++;
-			}
-
-			for (int i = 0; i < count - 1; i++) {
-				// System.out.println(data[i]);
-				if (data[i].equals("extends")) {
-					if (data[i + 1].equals("Activity")) {
-						return ACTIVITY;
-					} else if (data[i + 1].equals("ContentProvider")) {
-						return PROVIDER;
-					}
-				}
-			}
-		}
-		return 0;
-	}
 	
-	public static int fileRead(File file) throws IOException {
-
-		BufferedReader in = null;
-
-		in = new BufferedReader(new FileReader(file));
-		String[] data;
-
-		int count = 0;
-		String temp;
-		while ((temp = in.readLine()) != null) {
-			data = new String[100];
-			StringTokenizer st = new StringTokenizer(temp);
-
-			while (st.hasMoreTokens()) {
-				data[count] = st.nextToken();
-				// System.out.println(data[count]);
-
-				count++;
-			}
-
-			for (int i = 0; i < count - 1; i++) {
-				if (data[i].equals("extends")) {
-					if (data[i + 1].equals("Activity")) {
-						System.out.println("\n\n\n\n\n"+data[i+1]+"\n\n\n\n\n");
-						return ACTIVITY;
-					} else if (data[i + 1].equals("ContentProvider")) {
-						System.out.println("\n\n\n\n\n"+data[i+1]+"\n\n\n\n\n");
-						return PROVIDER;
-					}
-				}
-			}
-		}
-		return 0;
-	}
-	*/
-
 	private void visitAllFiles(ArrayList<File> files, File directory) {
 		// TODO Auto-generated method stub
 		if (directory.isDirectory()) {
@@ -879,6 +782,40 @@ public class View extends ViewPart {
 		}
 	}
 
+	public String getSuperClass(String file) throws IOException{
+		
+		File f = new File(file);
+		BufferedReader br = null;
+		try{
+			br = new BufferedReader(new FileReader(f));
+		}
+		catch(FileNotFoundException e){
+			e.printStackTrace();
+			return null;
+		}
+		
+		String superClassName = null;
+		String s;
+		
+		while((s = br.readLine())!=null){
+			if(s.contains(removeFileExtention(f.getName())) && s.contains("class") ){
+				if(s.contains("extends")){
+					if(s.contains("Activity")){
+						superClassName = "Activity";
+					}
+					else if(s.contains("ContentProvider")){
+						superClassName = "ContentProvider";
+					}
+					else
+						return null;
+				}
+			}
+		}
+		br.close();
+		
+		return superClassName;
+	}
+	
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */

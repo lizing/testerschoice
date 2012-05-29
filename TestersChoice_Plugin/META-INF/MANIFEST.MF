@@ -10,3 +10,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ClassPath: .,
  swing2swt.jar
+Export-Package: CodeGen,
+ org.eclipse.wb.swt,
+ swing2swt.layout,
+ testerschoice_plugin
