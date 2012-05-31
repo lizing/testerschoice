@@ -38,21 +38,71 @@
         android:layout_height="wrap_content"
         android:text="@string/purchase_date" />
 
-    <DatePicker
-        android:id="@+id/purchase_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal" >
+        
+        <EditText
+	        android:id="@+id/year"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:ems="4"
+	        android:inputType="number"
+	        android:hint="2012" />
+        
+        <TextView
+	        android:id="@+id/textView4"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/year" />
 
-    <Button
-        android:id="@+id/submit_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/submit" />
+	    <EditText
+	        android:id="@+id/month"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:ems="2"
+	        android:inputType="number"
+	        android:hint="1" />
+	    
+	    <TextView
+	        android:id="@+id/textView5"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/month" />
+	
+	    <EditText
+	        android:id="@+id/day"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:ems="2"
+	        android:inputType="number"
+	        android:hint="1" />
+	    
+	    <TextView
+	        android:id="@+id/textView6"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/day" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/cancel_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/cancel" />
+    <LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal" >
+	    
+	    <Button
+	        android:id="@+id/submit_button"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/submit" />
+	
+	    <Button
+	        android:id="@+id/cancel_button"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/cancel" />
+    
+    </LinearLayout>
 
 </LinearLayout>

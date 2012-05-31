@@ -1,5 +1,8 @@
 package com.testerschoice.moneybook;
 
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,6 +13,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.MultiAutoCompleteTextView.Tokenizer;
 import android.widget.Toast;
 
 import com.testerschoice.moneybook.MoneyBook.MoneyBookColumns;
@@ -19,6 +23,7 @@ public class MainActivity extends Activity {
 	Button mAddButton, mDelAllButton;
 	ListView mListView;
 	ArrayAdapter<String> adapter;
+	ArrayList<String> items;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -29,8 +34,8 @@ public class MainActivity extends Activity {
 	    mAddButton = (Button) findViewById(R.id.add_button);
 	    mDelAllButton = (Button) findViewById(R.id.del_all_button);
 	    mListView = (ListView) findViewById(R.id.listView1);
-	    adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-	    
+	    items = new ArrayList<String>();
+	    adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
 	    displayList();
 	    
 	    mAddButton.setOnClickListener(new View.OnClickListener() {
@@ -61,6 +66,26 @@ public class MainActivity extends Activity {
 				// TODO Auto-generated method stub
 				// 아직 구현되지 않음
 				// 리스트뷰를 선택했을 때 해당 아이템의 정보를 볼 수 있는 새 액티비티를 띄우는 메쏘드
+				String[] data = new String[3];
+				int i = 0;
+				
+				if(items.get(0).equals(getResources().getString(R.string.no_item))){
+					return;
+				}
+				
+				String s = items.get(position);
+				StringTokenizer token = new StringTokenizer(s);
+				while(token.hasMoreTokens()){
+					data[i] = token.nextToken("-");
+					i++;
+				}
+				
+				Intent intent = new Intent(MainActivity.this, ViewItemActivity.class);
+				intent.putExtra("year", data[0]);
+				intent.putExtra("month", data[1]);
+				intent.putExtra("day", data[2]);
+				
+				startActivity(intent);
 			}
 		});
 	}
@@ -73,52 +98,37 @@ public class MainActivity extends Activity {
 		displayList();
 	}
 
-	public String[] getItems(){
-		String[] items;
+	public void setItemLists(){
 		Cursor c = getContentResolver().query(MoneyBookColumns.CONTENT_URI, null, null, null, null);
 		
 		if(c == null){
-			return null;
+			return;
 		}
 		
 		if(!c.moveToFirst()){
-			return null;
+			return;
 		}
-		
-		int counter = 0;
-		int size = c.getCount();
-		items = new String[size];
 		
 		int indexOfYear = c.getColumnIndexOrThrow(MoneyBookColumns.PURCHASE_DATE_YEAR);
 		int indexOfMonth = c.getColumnIndexOrThrow(MoneyBookColumns.PURCHASE_DATE_MONTH);
 		int indexOfDay = c.getColumnIndexOrThrow(MoneyBookColumns.PURCHASE_DATE_DAY);
 		
+		items.clear();
+		
 		do{
 			int year = c.getInt(indexOfYear);
 			int month = c.getInt(indexOfMonth);
 			int day = c.getInt(indexOfDay);
-			
-			items[counter] = year + "년 " + month + "월 " + day + "일";
-			
-			counter++;
+				
+			items.add(year + "-" + month + "-" + day);
 		}while(c.moveToNext());
-		
-		return items;
 	}
 	
 	public void displayList(){
-		String[] items;
-	    items = getItems();
-	
-	    if(items == null){
-	    	items = new String[1];
-	    	items[0] = "추가된 내용이 없습니다.";
-	    }
-	    
-	    adapter.clear();
-	    
-	    for(int i = 0; i < items.length; i++){
-	    	adapter.add(items[i]);
+		setItemLists();
+		
+	    if(items.size() == 0){
+	    	items.add(getResources().getString(R.string.no_item));
 	    }
 	    
 	    mListView.setAdapter(adapter);

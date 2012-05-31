@@ -20,7 +20,10 @@ public class AddNewActivity extends Activity {
 	Button mCancelButton;
 	EditText mItem;
 	EditText mPrice;
-	DatePicker mDate;
+	EditText mYear;
+	EditText mMonth;
+	EditText mDay;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -31,18 +34,18 @@ public class AddNewActivity extends Activity {
 	    mCancelButton = (Button) findViewById(R.id.cancel_button);
 	    mItem = (EditText) findViewById(R.id.purchase_item_name);
 	    mPrice = (EditText) findViewById(R.id.purchase_price);
-	    mDate = (DatePicker) findViewById(R.id.purchase_date);
+	    mYear = (EditText) findViewById(R.id.year);
+	    mMonth = (EditText) findViewById(R.id.month);
+	    mDay = (EditText) findViewById(R.id.day);
 	    
 	    mSubmitButton.setOnClickListener(new View.OnClickListener() {
-			
-			
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				String item = mItem.getText().toString();
 				String itemPrice = mPrice.getText().toString();
-				int day = mDate.getDayOfMonth();
-				int month = mDate.getMonth();
-				int year = mDate.getYear();
+				int day = Integer.parseInt(mDay.getText().toString());
+				int month = Integer.parseInt(mMonth.getText().toString());
+				int year = Integer.parseInt(mYear.getText().toString());
 				
 				if(item.isEmpty()){
 					// 알림 창 코드 추가
@@ -58,13 +61,31 @@ public class AddNewActivity extends Activity {
 					return;
 				}
 				
+				if(day <= 0 || day > 31){
+					String message = getResources().getString(R.string.input_day);
+					displayDialog(message);
+					return;
+				}
+				
+				if(month <= 0 || month > 12){
+					String message = getResources().getString(R.string.input_month);
+					displayDialog(message);
+					return;
+				}
+				
+				if(year < 2000 || year > 9999){
+					String message = getResources().getString(R.string.input_day);
+					displayDialog(message);
+					return;
+				}
+				
 				int price = Integer.parseInt(mPrice.getText().toString());
 				
 				ContentValues values = new ContentValues();
 				values.put(MoneyBookColumns.ITEM, item);
 				values.put(MoneyBookColumns.ITEM_PRICE, price);
 				values.put(MoneyBookColumns.PURCHASE_DATE_YEAR, year);
-				values.put(MoneyBookColumns.PURCHASE_DATE_MONTH, month + 1); // 0부터 요일이 시작하기 때문에 1을 더해 줌
+				values.put(MoneyBookColumns.PURCHASE_DATE_MONTH, month);
 				values.put(MoneyBookColumns.PURCHASE_DATE_DAY, day);
 				
 				Uri newUri = getContentResolver().insert(MoneyBookColumns.CONTENT_URI, values);
