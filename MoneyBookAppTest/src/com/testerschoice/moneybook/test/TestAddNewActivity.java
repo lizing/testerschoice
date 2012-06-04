@@ -14,7 +14,9 @@ public class TestAddNewActivity extends
 	Activity testActivity;
 	EditText itemName;
 	EditText itemPrice;
-	DatePicker itemPurchaseDate;
+	EditText itemYear;
+	EditText itemMonth;
+	EditText itemDay;
 	Button submitButton;
 	
 	public static final String AUTHORITY = "com.testerschoice.provider.MoneyBook";
@@ -29,7 +31,9 @@ public class TestAddNewActivity extends
 		testActivity = startActivity();
 		itemName = (EditText) testActivity.findViewById(com.testerschoice.moneybook.R.id.purchase_item_name);
 		itemPrice = (EditText) testActivity.findViewById(com.testerschoice.moneybook.R.id.purchase_price);
-		itemPurchaseDate = (DatePicker) testActivity.findViewById(com.testerschoice.moneybook.R.id.purchase_date);
+		itemYear = (EditText)testActivity.findViewById(com.testerschoice.moneybook.R.id.year);
+		itemMonth = (EditText)testActivity.findViewById(com.testerschoice.moneybook.R.id.month);
+		itemDay = (EditText)testActivity.findViewById(com.testerschoice.moneybook.R.id.day);
 		submitButton = (Button) testActivity.findViewById(com.testerschoice.moneybook.R.id.submit_button);
 	}
 	
@@ -37,7 +41,9 @@ public class TestAddNewActivity extends
 		assertNotNull(testActivity);
 		assertNotNull(itemName);
 		assertNotNull(itemPrice);
-		assertNotNull(itemPurchaseDate);
+		assertNotNull(itemYear);
+		assertNotNull(itemMonth);
+		assertNotNull(itemDay);
 		assertNotNull(submitButton);
 	}
 	

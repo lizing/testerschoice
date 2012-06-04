@@ -119,8 +119,13 @@ public class MainActivity extends Activity {
 			int year = c.getInt(indexOfYear);
 			int month = c.getInt(indexOfMonth);
 			int day = c.getInt(indexOfDay);
-				
-			items.add(year + "-" + month + "-" + day);
+			
+			String text = year + "-" + month + "-" + day;
+			
+			if(items.contains(text))
+				continue;
+			
+			items.add(text);
 		}while(c.moveToNext());
 	}
 	

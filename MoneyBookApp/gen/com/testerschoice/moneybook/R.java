@@ -14,13 +14,15 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int add_button=0x7f05000e;
-        public static final int button1=0x7f050010;
-        public static final int button2=0x7f050011;
+        public static final int add_button=0x7f050010;
+        public static final int button1=0x7f050012;
+        public static final int button2=0x7f050013;
         public static final int cancel_button=0x7f05000c;
         public static final int day=0x7f050009;
-        public static final int del_all_button=0x7f05000f;
-        public static final int listView1=0x7f05000d;
+        public static final int del_all_button=0x7f050011;
+        public static final int item_name=0x7f05000d;
+        public static final int item_price=0x7f05000e;
+        public static final int listView1=0x7f05000f;
         public static final int month=0x7f050007;
         public static final int purchase_item_name=0x7f050001;
         public static final int purchase_price=0x7f050003;
@@ -35,8 +37,9 @@ public final class R {
     }
     public static final class layout {
         public static final int add_new=0x7f030000;
-        public static final int main=0x7f030001;
-        public static final int view_item=0x7f030002;
+        public static final int itemlist=0x7f030001;
+        public static final int main=0x7f030002;
+        public static final int view_item=0x7f030003;
     }
     public static final class string {
         public static final int add=0x7f040006;
@@ -44,6 +47,7 @@ public final class R {
         public static final int app_name=0x7f040000;
         public static final int back=0x7f04000b;
         public static final int cancel=0x7f040005;
+        public static final int choice=0x7f040017;
         public static final int confirm=0x7f040009;
         public static final int day=0x7f040010;
         public static final int del_all=0x7f040007;
@@ -53,6 +57,8 @@ public final class R {
         public static final int input_name=0x7f04000c;
         public static final int input_price=0x7f04000d;
         public static final int input_year=0x7f040013;
+        public static final int item_name=0x7f040015;
+        public static final int item_price=0x7f040016;
         public static final int month=0x7f04000f;
         public static final int no_item=0x7f040014;
         public static final int purchase_date=0x7f040003;

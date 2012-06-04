@@ -21,5 +21,8 @@
     <string name="input_month">월을 올바르게 입력해주세요</string>
     <string name="input_year">년도를 올바르게 입력해주세요</string>
     <string name="no_item">추가된 내용이 없습니다</string>
+    <string name="item_name">상품 이름</string>
+    <string name="item_price">상품 가격</string>
+    <string name="choice">선택하세요</string>
 
 </resources>
