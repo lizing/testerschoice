@@ -22,9 +22,12 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
@@ -44,12 +47,14 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import CodeGen.ClassSkeleton;
 import CodeGen.MethodSkeleton;
 import CodeGen.TestCaseTemplate;
+import CodeGen.TypeVariable;
 
 public class View extends ViewPart {
 	public View() {
 	}
 
 	private static final int MAX_TAB_SIZE = 16;
+	private static final int MAX_METHOD_LINE = 32;
 	public static final String ID = "TestersChoice_Plugin.view";
 	private Text text_path;
 	private Text text_method_name;
@@ -87,6 +92,9 @@ public class View extends ViewPart {
 
 	String[][] secuential_id;
 	String[][] sequential_input_value;
+	
+	ArrayList<MethodSkeleton> methods = new ArrayList<MethodSkeleton>(); 
+	// MethodSkeleton[] methods = new MethodSkeleton[MAX_TAB_SIZE];
 	
 	int tabSize = 0;
 	static int assertTipFlag = 0;
@@ -313,8 +321,9 @@ public class View extends ViewPart {
 
 			if (text_method_name.getText().length() > 0) {
 				tabItem[tabSize] = new TabItem(tabFolder, SWT.NONE);
-				tabComposite[tabSize] = new Composite(tabFolder, SWT.PUSH);
-				tabItem[tabSize].setControl(tabComposite[tabSize]);
+				methods.add(new MethodSkeleton());
+				//tabComposite[tabSize] = new Composite(tabFolder, SWT.PUSH);
+				//tabItem[tabSize].setControl(tabComposite[tabSize]);
 				methodNames[tabSize] = text_method_name.getText();
 				tabItem[tabSize].setText(methodNames[tabSize]);
 				tabSize++;
@@ -443,9 +452,10 @@ public class View extends ViewPart {
 			for (int i = 0; i < Button_id.size(); i++) {
 				btn_layout_button[i] = new Button(composite_view_list, SWT.PUSH);
 				btn_layout_button[i].setBounds(10, 40 + i * 25, 35, 20);
-				btn_layout_button[i].setData(Button_id.get(i));
+				//btn_layout_button[i].setData(Button_id.get(i));
+				btn_layout_button[i].setData(new String[]{"Button", Button_id.get(i)});
 				btn_layout_button[i].setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgBtnType.jpg"));
-				btn_layout_button[i].addSelectionListener(new ButtonSelectedListener());
+				btn_layout_button[i].addSelectionListener(new ViewSelectedListener());
 
 				label_layout_button[i] = new Label(composite_view_list, SWT.PUSH);
 				label_layout_button[i].setBounds(50, 40 + i * 25, 130, 20);
@@ -455,9 +465,10 @@ public class View extends ViewPart {
 			for (int i = 0; i < EditText_id.size(); i++) {
 				text_layout_Text[i] = new Button(composite_view_list, SWT.PUSH);
 				text_layout_Text[i].setBounds(190, 40 + i * 25, 35, 20);
-				text_layout_Text[i].setData(EditText_id.get(i));
+				//text_layout_Text[i].setData(EditText_id.get(i));
+				text_layout_Text[i].setData(new String[]{"EditText", EditText_id.get(i)});
 				text_layout_Text[i].setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgTextType.jpg"));
-				text_layout_Text[i].addSelectionListener(new TextSelectedListener());
+				text_layout_Text[i].addSelectionListener(new ViewSelectedListener());
 				label_layout_Text[i] = new Label(composite_view_list, SWT.PUSH);
 				label_layout_Text[i].setBounds(230, 40 + i * 25, 130, 20);
 				label_layout_Text[i].setText(EditText_id.get(i));
@@ -490,10 +501,15 @@ public class View extends ViewPart {
 			skeleton.setClassName(testcase_class_name);
 			skeleton.setPackageName(pkg_name);
 	
+			for(int i = 0; i < methods.size(); i++){
+				methods.get(i).setMethodName(methodNames[i]);
+				skeleton.setMethod(methods.get(i));
+			}
+			
+			/*
 			for(int i=0; i<tabSize; i++){
 				MethodSkeleton method = new MethodSkeleton();
 				method.setMethodName(methodNames[i]);
-				
 				for (int j = 0; j < tabFolderViewHeight[i]; j++) {
 					String s = sequential_input_value[i][j];
 					if (s != null)
@@ -503,7 +519,7 @@ public class View extends ViewPart {
 				}
 				skeleton.setMethod(method);
 			}
-			
+			*/
 			String file = gen.generate(skeleton);
 			
 			String [] assertContents = {
@@ -684,74 +700,163 @@ public class View extends ViewPart {
 			
 		}
 	}
+	
+	class ViewSelectedListener implements SelectionListener{
 
-	class ButtonSelectedListener implements SelectionListener {
-
-		public void widgetDefaultSelected(SelectionEvent arg0) {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
 			// TODO Auto-generated method stub
-
+			/*
+			MethodSkeleton method = new MethodSkeleton();
+			String[] info = (String[])e.widget.getData();
+			String type = info[0];
+			String id = info[1];
+			if(type == null)
+				method.setVariable(type, id, null);
+			else
+				method.setVariable(type, id, "");
+			methods.add(method);
+			drawTabFolder();
+			*/
+			int tabIndex = tabFolder.getSelectionIndex();
+			String[] info = (String[])e.widget.getData();
+			String type = info[0];
+			String id = info[1];
+			
+			if(type.equals("Button"))
+				methods.get(tabIndex).setVariable(type, id, null);
+			else
+				methods.get(tabIndex).setVariable(type, id, "");
+			
+			drawTabFolder();
 		}
 
-		public void widgetSelected(SelectionEvent arg0) {
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
 			// TODO Auto-generated method stub
-			Button btn = new Button(tabComposite[tabFolder.getSelectionIndex()], SWT.BORDER);
-			btn.setBounds(5, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 35, 20);
-			btn.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgBtnType.jpg"));
 			
-			String text = tabFolderViewHeight[tabFolder.getSelectionIndex()] + ". "	+ (String) arg0.widget.getData();
-			
-			Label selected_text = new Label(tabComposite[tabFolder.getSelectionIndex()], SWT.BORDER);
-			selected_text.setBounds(40, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 150, 20);
-			selected_text.setText(text);
-			
-			secuential_id[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String) arg0.widget.getData();
-			sequential_input_value[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = null;
-			
-			tabFolderViewHeight[tabFolder.getSelectionIndex()]++;
 		}
-	}
-
-	class TextSelectedListener implements SelectionListener {
-
-		Text edit_text_value;
 		
-		public void widgetDefaultSelected(SelectionEvent arg0) {
-			// TODO Auto-generated method stub
+	}
+	
+	private void drawTabFolder(){
+		int tabIndex = tabFolder.getSelectionIndex();		
+		Composite mainComposite = new Composite(tabFolder, SWT.NONE);
+		
+		RowLayout mainLayout = new RowLayout();
+		mainLayout.wrap = true;
+		mainLayout.pack = true;
+		mainLayout.type = SWT.VERTICAL;
+		mainComposite.setLayout(mainLayout);
+		
+		int lineLength = methods.get(tabFolder.getSelectionIndex()).getTypeVariables().size();
+		
+		if(lineLength <= 0){
+			return;
+		}
+		
+		for(int i = 0; i < lineLength; i++){
+			Composite rowComposite = new Composite(mainComposite, SWT.NONE);
+			RowLayout rowLayout = new RowLayout();
+			rowLayout.wrap = true;
+			rowLayout.pack = true;
+			rowComposite.setLayout(rowLayout);
+			
+			String type = methods.get(tabIndex).getTypeVariables().get(i).getType();
+			String id = methods.get(tabIndex).getTypeVariables().get(i).getId();
+			String value = methods.get(tabIndex).getTypeVariables().get(i).getValue();
+			
+			Button typeButton = new Button(rowComposite, SWT.NONE);
+			typeButton.setSize(35, 20);
+			
+			if(type.equals(MethodSkeleton.BUTTON))
+				typeButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgBtnType.jpg"));
+			else
+				typeButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgTextType.jpg"));
+			
+			Label idLabel = new Label(rowComposite, SWT.BORDER);
+			idLabel.setText(id);
+			idLabel.setSize(150, 20);
+			
+			if(value != null){
+				Text valueText = new Text(rowComposite, SWT.BORDER);
+				valueText.setForeground(valueText.getDisplay().getSystemColor(SWT.COLOR_BLUE));
+				valueText.addFocusListener(new TextWidgetFocusListener(i, id, valueText));
+			}else{
+				Text valueText = new Text(rowComposite, SWT.BORDER);
+				valueText.setVisible(false);
+			}
+			
+			Button upButton = new Button(rowComposite, SWT.PUSH);
+			Button downButton = new Button(rowComposite, SWT.PUSH);
+			Button deleteButton = new Button(rowComposite, SWT.PUSH);
+			
+			upButton.setText("U"); // UP
+			downButton.setText("D"); // Down
+			deleteButton.setText("X"); // Delete
+			
+			upButton.addSelectionListener(new OrderButtonListener("UP", i));
+			downButton.addSelectionListener(new OrderButtonListener("DOWN", i));
+			deleteButton.addSelectionListener(new OrderButtonListener("DELETE", i));
+			
+			if(i == 0)
+				upButton.setVisible(false);
+			
+			if(i == (lineLength - 1))
+				downButton.setVisible(false);
+		}
+		
+		tabItem[tabIndex].setControl(mainComposite);
+	}
+	
+	class OrderButtonListener implements SelectionListener{
+
+		String type;
+		int index;
+		
+		public OrderButtonListener(String type, int index){
+			this.type = type;
+			this.index = index;
+		}
+		
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			// TODO Auto-generated method stub			
+			TypeVariable temp;
+			if(type.equals("UP")){
+				temp = methods.get(tabFolder.getSelectionIndex()).getTypeVariables().remove(index);
+				methods.get(tabFolder.getSelectionIndex()).getTypeVariables().add(index - 1, temp);
+			}else if(type.equals("DOWN")){
+				temp = methods.get(tabFolder.getSelectionIndex()).getTypeVariables().remove(index);
+				methods.get(tabFolder.getSelectionIndex()).getTypeVariables().add(index + 1, temp);
+			}else{
+				if(index == 0){
+					methods.get(tabFolder.getSelectionIndex()).getTypeVariables().clear();
+				}else
+					methods.get(tabFolder.getSelectionIndex()).getTypeVariables().remove(index);
+			}
+			
+			drawTabFolder();
 		}
 
-		public void widgetSelected(SelectionEvent arg0) {
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
 			// TODO Auto-generated method stub
-			Button btn = new Button(tabComposite[tabFolder.getSelectionIndex()], SWT.BORDER);
-			btn.setBounds(5, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 35, 20);
-			btn.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgTextType.jpg"));
 			
-			String text = tabFolderViewHeight[tabFolder.getSelectionIndex()] + ". "	+ (String) arg0.widget.getData();
-			Label selected_text = new Label(tabComposite[tabFolder.getSelectionIndex()], SWT.BORDER);
-			selected_text.setBounds(40, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 150, 20);
-
-			edit_text_value = new Text(tabComposite[tabFolder.getSelectionIndex()], SWT.BORDER);
-			edit_text_value.setBounds(195, 10 + tabFolderViewHeight[tabFolder.getSelectionIndex()] * 25, 150, 20);
-			//edit_text_value.setText("Input the value");
-			edit_text_value.setForeground(edit_text_value.getDisplay().getSystemColor(SWT.COLOR_BLUE));
-			edit_text_value.addFocusListener(new TextWidgetFocusListener(edit_text_value));
-			
-			selected_text.setText(text);
-			
-			secuential_id[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String) arg0.widget.getData();
-			//sequential_input_value[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String)edit_text_value.getText();
-			
-			edit_text_value.forceFocus();
-			tabFolderViewHeight[tabFolder.getSelectionIndex()]++;
 		}
-
+		
 	}
 	
 	class TextWidgetFocusListener implements FocusListener{
 
+		int index;
 		Text text;
+		String id;
 		
-		public TextWidgetFocusListener(Text text) {
+		public TextWidgetFocusListener(int index, String id, Text text) {
+			this.index = index;
 			this.text = text;
+			this.id = id;
 		}
 		
 		public void focusGained(FocusEvent e) {
@@ -761,10 +866,8 @@ public class View extends ViewPart {
 
 		public void focusLost(FocusEvent e) {
 			// TODO Auto-generated method stub
-			Text selectedWidget = (Text)e.getSource();
-			int selectedIndex = (selectedWidget.getLocation().y - 10) / 25;
-			sequential_input_value[tabFolder.getSelectionIndex()][selectedIndex] = (String)text.getText();
-			//sequential_input_value[tabFolder.getSelectionIndex()][tabFolderViewHeight[tabFolder.getSelectionIndex()]] = (String)edit_text_value.getText();
+			String value = text.getText();
+			methods.get(tabFolder.getSelectionIndex()).getTypeVariables().set(index, new TypeVariable("EditText", id, value));
 		}
 		
 	}
