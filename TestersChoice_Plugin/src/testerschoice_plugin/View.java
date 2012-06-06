@@ -22,12 +22,10 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
@@ -54,7 +52,6 @@ public class View extends ViewPart {
 	}
 
 	private static final int MAX_TAB_SIZE = 16;
-	private static final int MAX_METHOD_LINE = 32;
 	public static final String ID = "TestersChoice_Plugin.view";
 	private Text text_path;
 	private Text text_method_name;
@@ -229,21 +226,21 @@ public class View extends ViewPart {
 
 		tabFolder = new TabFolder(composite, SWT.NONE);
 		tabFolder.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
-		tabFolder.setBounds(423, 69, 359, 517);
+		tabFolder.setBounds(423, 69, 390, 517);
 
 		text_method_name = new Text(composite, SWT.BORDER);
 		text_method_name.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
-		text_method_name.setBounds(526, 14, 174, 20);
+		text_method_name.setBounds(526, 14, 205, 20);
 
 		Button btn_add_method = new Button(composite, SWT.NONE);
 		btn_add_method.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
-		btn_add_method.setBounds(706, 14, 76, 20);
+		btn_add_method.setBounds(737, 14, 76, 20);
 		btn_add_method.setText("Create");
 		btn_add_method.addSelectionListener(new NewMethodButtonListener());
 
 		Button btn_generate = new Button(composite, SWT.NONE);
 		btn_generate.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
-		btn_generate.setBounds(626, 626, 156, 43);
+		btn_generate.setBounds(657, 625, 156, 43);
 		btn_generate.setText("Preview Testcase Code");
 
 		Label lblNewLabel = new Label(composite, SWT.NONE);
@@ -292,16 +289,16 @@ public class View extends ViewPart {
 		label_6.setBounds(10, 66, 381, 2);
 
 		Label label_7 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		label_7.setBounds(423, 6, 362, 2);
+		label_7.setBounds(423, 6, 390, 2);
 
 		Label label_8 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		label_8.setBounds(423, 45, 362, 2);
+		label_8.setBounds(423, 45, 390, 2);
 
 		Label label_9 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		label_9.setBounds(423, 592, 362, 2);
+		label_9.setBounds(423, 592, 390, 2);
 
 		Label label_10 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		label_10.setBounds(423, 675, 362, 2);
+		label_10.setBounds(423, 675, 390, 2);
 
 		Label label_11 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		label_11.setBounds(10, 675, 381, 2);
@@ -362,7 +359,7 @@ public class View extends ViewPart {
 			
 
 			selected_directory = new File(projectPath);
-			validated_android_project = new File(projectPath + "\\AndroidManifest.xml");
+			validated_android_project = new File(projectPath + File.separator +"AndroidManifest.xml");
 			
 			projectName = selected_directory.getName();
 			lbl_app_name.setText(projectName);
@@ -372,7 +369,7 @@ public class View extends ViewPart {
 				this.widgetSelected(arg0);
 			}
 			
-			selected_directory = new File(projectPath + "//src");
+			selected_directory = new File(projectPath + File.separator + "src");
 			files = new ArrayList<File>();
 			visitAllFiles(files, selected_directory);
 
@@ -400,7 +397,7 @@ public class View extends ViewPart {
 			combo_activity.setText("Success To List Activity Classes");
 			combo_provider.setText("Success To List ContentProvider Classes");
 
-			selected_directory = new File(projectPath + "//res");
+			selected_directory = new File(projectPath + File.separator + "res");
 			files = new ArrayList<File>();
 			visitAllFiles(files, selected_directory);
 			for (File f : files) {
@@ -435,7 +432,7 @@ public class View extends ViewPart {
 			
 			AndroidXmlSaxParser buttonParser = new AndroidXmlSaxParser(xmlHash.get(combo_layout_xml.getText()), "Button");
 			AndroidXmlSaxParser editTextParser = new AndroidXmlSaxParser(xmlHash.get(combo_layout_xml.getText()), "EditText");
-			AndroidXmlSaxParser manifestParser = new AndroidXmlSaxParser(projectPath + "\\AndroidManifest.xml", "manifest");
+			AndroidXmlSaxParser manifestParser = new AndroidXmlSaxParser(projectPath + File.separator + "AndroidManifest.xml", "manifest");
 
 			buttonParser.parse();
 			editTextParser.parse();
@@ -703,21 +700,8 @@ public class View extends ViewPart {
 	
 	class ViewSelectedListener implements SelectionListener{
 
-		@Override
 		public void widgetSelected(SelectionEvent e) {
 			// TODO Auto-generated method stub
-			/*
-			MethodSkeleton method = new MethodSkeleton();
-			String[] info = (String[])e.widget.getData();
-			String type = info[0];
-			String id = info[1];
-			if(type == null)
-				method.setVariable(type, id, null);
-			else
-				method.setVariable(type, id, "");
-			methods.add(method);
-			drawTabFolder();
-			*/
 			int tabIndex = tabFolder.getSelectionIndex();
 			String[] info = (String[])e.widget.getData();
 			String type = info[0];
@@ -731,7 +715,6 @@ public class View extends ViewPart {
 			drawTabFolder();
 		}
 
-		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
 			// TODO Auto-generated method stub
 			
@@ -744,21 +727,22 @@ public class View extends ViewPart {
 		Composite mainComposite = new Composite(tabFolder, SWT.NONE);
 		
 		RowLayout mainLayout = new RowLayout();
-		mainLayout.wrap = true;
-		mainLayout.pack = true;
+		mainLayout.wrap = false;
+		//mainLayout.pack = false;
 		mainLayout.type = SWT.VERTICAL;
 		mainComposite.setLayout(mainLayout);
 		
-		int lineLength = methods.get(tabFolder.getSelectionIndex()).getTypeVariables().size();
-		
-		if(lineLength <= 0){
+		if(methods.get(tabIndex).getTypeVariables().isEmpty()){
+			tabItem[tabIndex].setControl(mainComposite);
 			return;
 		}
 		
-		for(int i = 0; i < lineLength; i++){
+		int lineLength = methods.get(tabFolder.getSelectionIndex()).getTypeVariables().size();
+		
+		for(int i = 0; i < lineLength; i++){	
 			Composite rowComposite = new Composite(mainComposite, SWT.NONE);
 			RowLayout rowLayout = new RowLayout();
-			rowLayout.wrap = true;
+			rowLayout.wrap = false;
 			rowLayout.pack = true;
 			rowComposite.setLayout(rowLayout);
 			
@@ -791,8 +775,10 @@ public class View extends ViewPart {
 			Button downButton = new Button(rowComposite, SWT.PUSH);
 			Button deleteButton = new Button(rowComposite, SWT.PUSH);
 			
-			upButton.setText("U"); // UP
-			downButton.setText("D"); // Down
+			upButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/hideTip.jpg"));
+			downButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/showTip.jpg"));
+			//upButton.setText("U"); // UP
+			//downButton.setText("D"); // Down
 			deleteButton.setText("X"); // Delete
 			
 			upButton.addSelectionListener(new OrderButtonListener("UP", i));
@@ -819,7 +805,6 @@ public class View extends ViewPart {
 			this.index = index;
 		}
 		
-		@Override
 		public void widgetSelected(SelectionEvent e) {
 			// TODO Auto-generated method stub			
 			TypeVariable temp;
@@ -838,8 +823,7 @@ public class View extends ViewPart {
 			
 			drawTabFolder();
 		}
-
-		@Override
+		
 		public void widgetDefaultSelected(SelectionEvent e) {
 			// TODO Auto-generated method stub
 			
