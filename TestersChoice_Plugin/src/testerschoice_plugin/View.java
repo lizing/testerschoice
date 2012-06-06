@@ -27,8 +27,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -60,6 +62,7 @@ public class View extends ViewPart {
 	 * ACTIVITY_CLASS, PROVIDER_CLASS, AUTHORITY);
 	 * skeleton.setClassName(TESTCASE_CLASS_NAME); skeleton.setPackageName(PKG);
 	 */
+	Composite composite;
 
 	String activity_class;
 	String provider_class;
@@ -70,28 +73,21 @@ public class View extends ViewPart {
 	String projectName;
 	String projectPath;
 	
-	Button btn_load;
+	Button btn_load, btn_delete_all_methods;
 	Combo combo_activity, combo_provider, combo_layout_xml;
 	Label lbl_app_name;
 	Composite composite_view_list;
 	TabFolder tabFolder;
 	TabItem[] tabItem;
 	Composite[] tabComposite;
-	
-
-	static int[] tabFolderViewHeight;
 
 	HashMap<String, String> view_property;
 	Button[] btn_layout_button;
 	Button[] text_layout_Text;
 	Label[] label_layout_button;
 	Label[] label_layout_Text;
-
-	String[][] secuential_id;
-	String[][] sequential_input_value;
 	
-	ArrayList<MethodSkeleton> methods = new ArrayList<MethodSkeleton>(); 
-	// MethodSkeleton[] methods = new MethodSkeleton[MAX_TAB_SIZE];
+	ArrayList<MethodSkeleton> methods = new ArrayList<MethodSkeleton>();
 	
 	int tabSize = 0;
 	static int assertTipFlag = 0;
@@ -100,6 +96,76 @@ public class View extends ViewPart {
 
 	HashMap<String, String> xmlHash = new HashMap<String, String>();
 	private Text text_authority;
+	
+	private static final String [] assertContents = {
+			"static void assertEquals(short expected, short actual)",
+			"static void assertEquals(String message, int expected, int actual)",
+			"static void assertEquals(String message, short expected, short actual)",
+			"static void assertEquals(char expected, char actual)",
+			"static void assertEquals(String message, String expected, String actual)",
+			"static void assertEquals(int expected, int actual)",
+			"static void assertEquals(String message, double expected, double actual, double delta)",
+			"static void assertEquals(String message, long expected, long actual)",
+			"static void assertEquals(byte expected, byte actual)",
+			"static void assertEquals(Object expected, Object actual)",
+			"static void assertEquals(boolean expected, boolean actual)",
+			"static void assertEquals(String message, float expected, float actual, float delta)",
+			"static void assertEquals(String message, boolean expected, boolean actual)",
+			"static void assertEquals(String expected, String actual)",
+			"static void assertEquals(float expected, float actual, float delta)",
+			"static void assertEquals(String message, byte expected, byte actual)",
+			"static void assertEquals(double expected, double actual, double delta)",
+			"static void assertEquals(String message, char expected, char actual)",
+			"static void assertEquals(String message, Object expected, Object actual)",
+			"static void assertEquals(long expected, long actual)",
+			"static void assertFalse(String message, boolean condition)",
+			"static void assertFalse(boolean condition)",
+			"static void assertNotNull(String message, Object object)",
+			"static void assertNotNull(Object object)",
+			"static void assertNotSame(Object expected, Object actual)",
+			"static void assertNotSame(String message, Object expected, Object actual)",
+			"static void assertNull(Object object)",
+			"static void assertNull(String message, Object object)",
+			"static void assertSame(Object expected, Object actual)",
+			"static void assertSame(String message, Object expected, Object actual)",
+			"static void assertTrue(String message, boolean condition)",
+			"static void assertTrue(boolean condition)"
+	};
+	
+	private static final String [] toolTipAssertContents = {
+			"Asserts that two shorts are equal.",
+			"Asserts that two ints are equal.",
+			"Asserts that two shorts are equal.",
+			"Asserts that two chars are equal.",
+			"Asserts that two Strings are equal.",
+			"Asserts that two ints are equal.",
+			"Asserts that two doubles are equal concerning a delta.",
+			"Asserts that two longs are equal.",
+			"Asserts that two bytes are equal.",
+			"Asserts that two objects are equal.",
+			"Asserts that two booleans are equal.",
+			"Asserts that two floats are equal concerning a delta.",
+			"Asserts that two booleans are equal.",
+			"Asserts that two Strings are equal.",
+			"Asserts that two floats are equal concerning a delta.",
+			"Asserts that two bytes are equal.",
+			"Asserts that two doubles are equal concerning a delta.",
+			"Asserts that two chars are equal.",
+			"Asserts that two objects are equal.",
+			"Asserts that two longs are equal.",
+			"Asserts that a condition is false.",
+			"Asserts that a condition is false.",
+			"Asserts that an object isn't null.",
+			"sserts that an object isn't null.",
+			"Asserts that two objects do not refer to the same object.",
+			"Asserts that two objects do not refer to the same object.",
+			"Asserts that an object is null.",
+			"Asserts that an object is null.",
+			"Asserts that two objects refer to the same object.",
+			"Asserts that two objects refer to the same object.",
+			"Asserts that a condition is true.",
+			"Asserts that a condition is true.",
+	};
 	
 	/**
 	 * The content provider class is responsible for providing objects to the
@@ -144,20 +210,15 @@ public class View extends ViewPart {
 	 */
 	public void createPartControl(Composite parent) {
 		
-		Composite composite = new Composite(parent, SWT.NONE);
+		composite = new Composite(parent, SWT.NONE);
 		tabItem = new TabItem[MAX_TAB_SIZE];
-		tabFolderViewHeight = new int[MAX_TAB_SIZE];
 		tabComposite = new Composite[MAX_TAB_SIZE];
 		methodNames = new String[MAX_TAB_SIZE];
 		btn_layout_button = new Button[16];
 		text_layout_Text = new Button[32];
 		label_layout_button = new Label[16];
 		label_layout_Text = new Label[32];
-		view_property = new HashMap<String, String>();
-		
-		sequential_input_value = new String[MAX_TAB_SIZE][32];
-		secuential_id = new String[MAX_TAB_SIZE][32];
-		
+		view_property = new HashMap<String, String>();		
 		
 		Label lblTargetApplication = new Label(composite, SWT.NONE);
 		lblTargetApplication.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
@@ -226,7 +287,7 @@ public class View extends ViewPart {
 
 		tabFolder = new TabFolder(composite, SWT.NONE);
 		tabFolder.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
-		tabFolder.setBounds(423, 69, 390, 517);
+		tabFolder.setBounds(423, 88, 390, 517);
 
 		text_method_name = new Text(composite, SWT.BORDER);
 		text_method_name.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
@@ -242,6 +303,7 @@ public class View extends ViewPart {
 		btn_generate.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		btn_generate.setBounds(657, 625, 156, 43);
 		btn_generate.setText("Preview Testcase Code");
+		btn_generate.addSelectionListener(new GenerateButtonListener());
 
 		Label lblNewLabel = new Label(composite, SWT.NONE);
 		lblNewLabel.setFont(SWTResourceManager.getFont("Arial", 11, SWT.NORMAL));
@@ -302,7 +364,14 @@ public class View extends ViewPart {
 
 		Label label_11 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		label_11.setBounds(10, 675, 381, 2);
-		btn_generate.addSelectionListener(new GenerateButtonListener());
+		
+		btn_delete_all_methods = new Button(composite, SWT.NONE);
+		btn_delete_all_methods.setBounds(681, 54, 132, 28);
+		btn_delete_all_methods.setText("Delete All Method(s)");
+		btn_delete_all_methods.addSelectionListener(new DeleteMethodsListener());
+		if(tabSize == 0){
+			btn_delete_all_methods.setVisible(false);
+		}
 
 	}
 
@@ -315,16 +384,19 @@ public class View extends ViewPart {
 
 		public void widgetSelected(SelectionEvent e) {
 			// TODO Auto-generated method stub
-
 			if (text_method_name.getText().length() > 0) {
 				tabItem[tabSize] = new TabItem(tabFolder, SWT.NONE);
 				methods.add(new MethodSkeleton());
-				//tabComposite[tabSize] = new Composite(tabFolder, SWT.PUSH);
-				//tabItem[tabSize].setControl(tabComposite[tabSize]);
-				methodNames[tabSize] = text_method_name.getText();
-				tabItem[tabSize].setText(methodNames[tabSize]);
+				String methodName = text_method_name.getText();
+				methods.get(tabSize).setMethodName(methodName);
+				tabItem[tabSize].setText(methodName);
+				tabFolder.setSelection(tabSize);
 				tabSize++;
+				btn_delete_all_methods.setVisible(true);
+			}else if(text_method_name.getText().length() == 0){
+				MessageDialog.openWarning(new Shell(), "Warning...", "Please insert Method name");
 			}
+			
 			text_method_name.setText("");
 		}
 
@@ -332,7 +404,7 @@ public class View extends ViewPart {
 
 	class BrowseButtonListener implements SelectionListener {
 
-		File selected_directory, validated_android_project;
+		File selectedDirectory, project;
 		ArrayList<File> files;
 
 		public void widgetDefaultSelected(SelectionEvent arg0) {
@@ -342,36 +414,38 @@ public class View extends ViewPart {
 
 		public void widgetSelected(SelectionEvent arg0) {
 			// TODO Auto-generated method stub
-			combo_activity.removeAll();
-			combo_layout_xml.removeAll();
-			combo_provider.removeAll();
-
 			DirectoryDialog dlg = new DirectoryDialog(new Shell(), SWT.OPEN);
 			dlg.setText("Open...");
 			dlg.setMessage("Open Target App Project");
+			
 			projectPath = dlg.open();
+			
+			selectedDirectory = new File(projectPath);
+			project = new File(projectPath + File.separator +"AndroidManifest.xml");
 			
 			if(projectPath == null){
 				return;
 			}
 			
-			text_path.setText(projectPath);
-			
-
-			selected_directory = new File(projectPath);
-			validated_android_project = new File(projectPath + File.separator +"AndroidManifest.xml");
-			
-			projectName = selected_directory.getName();
-			lbl_app_name.setText(projectName);
-			
-			if(!validated_android_project.exists()){
+			if(!project.exists()){
 				MessageDialog.openWarning(new Shell(), "Warning", "Please Select an Android Project");
-				this.widgetSelected(arg0);
+				return;
 			}
 			
-			selected_directory = new File(projectPath + File.separator + "src");
+			repaintCompositeViewList();
+			deleteAllMethods();
+			text_path.setText("");
+			combo_activity.removeAll();
+			combo_layout_xml.removeAll();
+			combo_provider.removeAll();
+			
+			text_path.setText(projectPath);
+			projectName = selectedDirectory.getName();
+			lbl_app_name.setText(projectName);
+			
+			selectedDirectory = new File(projectPath + File.separator + "src");
 			files = new ArrayList<File>();
-			visitAllFiles(files, selected_directory);
+			visitAllFiles(files, selectedDirectory);
 
 			for (File f : files) {
 				String javaFile = f.getName();
@@ -394,12 +468,10 @@ public class View extends ViewPart {
 					}
 				}
 			}
-			combo_activity.setText("Success To List Activity Classes");
-			combo_provider.setText("Success To List ContentProvider Classes");
 
-			selected_directory = new File(projectPath + File.separator + "res");
+			selectedDirectory = new File(projectPath + File.separator + "res");
 			files = new ArrayList<File>();
-			visitAllFiles(files, selected_directory);
+			visitAllFiles(files, selectedDirectory);
 			for (File f : files) {
 				String xmlFile = f.getName();
 				if (xmlFile.endsWith(".xml")) {
@@ -407,17 +479,28 @@ public class View extends ViewPart {
 					combo_layout_xml.add(xmlFile);
 				}
 			}
-			combo_layout_xml.setText("Success To List Layout XML Files");
+			
+			if(!project.exists()){
+				this.widgetSelected(arg0);
+			}
+			else
+			{
+				combo_activity.setText("Success To List Activity Classes");
+				combo_provider.setText("Success To List ContentProvider Classes");
+				combo_layout_xml.setText("Success To List Layout XML Files");
+			}
+
 		}
 
 	}
 
 	class FetchButtonListener implements SelectionListener {
 		String text = "";
-		int height = 0;
 
 		public void widgetSelected(SelectionEvent arg0) {
 			// TODO Auto-generated method stub
+			repaintCompositeViewList();
+			deleteAllMethods();
 			
 			activity_class = combo_activity.getText();
 			provider_class = combo_provider.getText();
@@ -426,7 +509,6 @@ public class View extends ViewPart {
 			
 			if(activity_class == "" || provider_class == "" || authority == "" || combo_activity.getItemCount() == 0 || combo_layout_xml.getItemCount() == 0){
 				MessageDialog.openWarning(new Shell(), "Warning", "Please Select a Project First");
-				btn_load.setFocus();
 				return;
 			}
 			
@@ -438,37 +520,36 @@ public class View extends ViewPart {
 			editTextParser.parse();
 			manifestParser.parse();
 			
-			ArrayList<String> Button_id = buttonParser.getIdArrayList();
-			ArrayList<String> EditText_id = editTextParser.getIdArrayList();
+			ArrayList<String> buttonIds = buttonParser.getIdArrayList();
+			ArrayList<String> editTextIds = editTextParser.getIdArrayList();
 			pkg_name = manifestParser.getPackageName();
 			
 			Text btnType = new Text(composite_view_list, SWT.PUSH);
 			btnType.setBounds(15, 10, 350, 20);
 			btnType.setText("< ButtonType >\t\t\t\t\t< EditTextType >");
 
-			for (int i = 0; i < Button_id.size(); i++) {
+			for (int i = 0; i < buttonIds.size(); i++) {
 				btn_layout_button[i] = new Button(composite_view_list, SWT.PUSH);
 				btn_layout_button[i].setBounds(10, 40 + i * 25, 35, 20);
-				//btn_layout_button[i].setData(Button_id.get(i));
-				btn_layout_button[i].setData(new String[]{"Button", Button_id.get(i)});
+				btn_layout_button[i].setData(new String[]{"Button", buttonIds.get(i)});
 				btn_layout_button[i].setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgBtnType.jpg"));
 				btn_layout_button[i].addSelectionListener(new ViewSelectedListener());
 
 				label_layout_button[i] = new Label(composite_view_list, SWT.PUSH);
 				label_layout_button[i].setBounds(50, 40 + i * 25, 130, 20);
-				label_layout_button[i].setText(Button_id.get(i));
+				label_layout_button[i].setText(buttonIds.get(i));
 			}
 			
-			for (int i = 0; i < EditText_id.size(); i++) {
+			for (int i = 0; i < editTextIds.size(); i++) {
 				text_layout_Text[i] = new Button(composite_view_list, SWT.PUSH);
 				text_layout_Text[i].setBounds(190, 40 + i * 25, 35, 20);
-				//text_layout_Text[i].setData(EditText_id.get(i));
-				text_layout_Text[i].setData(new String[]{"EditText", EditText_id.get(i)});
+				text_layout_Text[i].setData(new String[]{"EditText", editTextIds.get(i)});
 				text_layout_Text[i].setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgTextType.jpg"));
 				text_layout_Text[i].addSelectionListener(new ViewSelectedListener());
+				
 				label_layout_Text[i] = new Label(composite_view_list, SWT.PUSH);
 				label_layout_Text[i].setBounds(230, 40 + i * 25, 130, 20);
-				label_layout_Text[i].setText(EditText_id.get(i));
+				label_layout_Text[i].setText(editTextIds.get(i));
 			}
 			
 			text_method_name.setFocus();
@@ -490,144 +571,82 @@ public class View extends ViewPart {
 
 		public void widgetSelected(SelectionEvent arg0) {
 			// TODO Auto-generated method stub
+			if(activity_class == null || provider_class == null){
+				//Show a dialog
+				return;
+			}
 			TestCaseTemplate gen = new TestCaseTemplate();
-			String activity_name = getFileNameWithoutFileExtention(activity_class);
-			String provider_name = getFileNameWithoutFileExtention(provider_class);
+			String activityName = getFileNameWithoutFileExtention(activity_class);
+			String providerName = getFileNameWithoutFileExtention(provider_class);
 
-			ClassSkeleton skeleton = new ClassSkeleton(activity_name, provider_name, authority);
+			ClassSkeleton skeleton = new ClassSkeleton(activityName, providerName, authority);
 			skeleton.setClassName(testcase_class_name);
 			skeleton.setPackageName(pkg_name);
 	
 			for(int i = 0; i < methods.size(); i++){
-				methods.get(i).setMethodName(methodNames[i]);
 				skeleton.setMethod(methods.get(i));
 			}
 			
-			/*
-			for(int i=0; i<tabSize; i++){
-				MethodSkeleton method = new MethodSkeleton();
-				method.setMethodName(methodNames[i]);
-				for (int j = 0; j < tabFolderViewHeight[i]; j++) {
-					String s = sequential_input_value[i][j];
-					if (s != null)
-						method.setVariable(MethodSkeleton.EDIT_TEXT, secuential_id[i][j], sequential_input_value[i][j]);
-					else
-						method.setVariable(MethodSkeleton.BUTTON, secuential_id[i][j], null);
-				}
-				skeleton.setMethod(method);
-			}
-			*/
 			String file = gen.generate(skeleton);
-			
-			String [] assertContents = {
-					"static void assertEquals(short expected, short actual)",
-					"static void assertEquals(String message, int expected, int actual)",
-					"static void assertEquals(String message, short expected, short actual)",
-					"static void assertEquals(char expected, char actual)",
-					"static void assertEquals(String message, String expected, String actual)",
-					"static void assertEquals(int expected, int actual)",
-					"static void assertEquals(String message, double expected, double actual, double delta)",
-					"static void assertEquals(String message, long expected, long actual)",
-					"static void assertEquals(byte expected, byte actual)",
-					"static void assertEquals(Object expected, Object actual)",
-					"static void assertEquals(boolean expected, boolean actual)",
-					"static void assertEquals(String message, float expected, float actual, float delta)",
-					"static void assertEquals(String message, boolean expected, boolean actual)",
-					"static void assertEquals(String expected, String actual)",
-					"static void assertEquals(float expected, float actual, float delta)",
-					"static void assertEquals(String message, byte expected, byte actual)",
-					"static void assertEquals(double expected, double actual, double delta)",
-					"static void assertEquals(String message, char expected, char actual)",
-					"static void assertEquals(String message, Object expected, Object actual)",
-					"static void assertEquals(long expected, long actual)",
-					"static void assertFalse(String message, boolean condition)",
-					"static void assertFalse(boolean condition)",
-					"static void assertNotNull(String message, Object object)",
-					"static void assertNotNull(Object object)",
-					"static void assertNotSame(Object expected, Object actual)",
-					"static void assertNotSame(String message, Object expected, Object actual)",
-					"static void assertNull(Object object)",
-					"static void assertNull(String message, Object object)",
-					"static void assertSame(Object expected, Object actual)",
-					"static void assertSame(String message, Object expected, Object actual)",
-					"static void assertTrue(String message, boolean condition)",
-					"static void assertTrue(boolean condition)"
-			};
-			
-			String [] toolTipAssertContents = {
-					"Asserts that two shorts are equal.",
-					"Asserts that two ints are equal.",
-					"Asserts that two shorts are equal.",
-					"Asserts that two chars are equal.",
-					"Asserts that two Strings are equal.",
-					"Asserts that two ints are equal.",
-					"Asserts that two doubles are equal concerning a delta.",
-					"Asserts that two longs are equal.",
-					"Asserts that two bytes are equal.",
-					"Asserts that two objects are equal.",
-					"Asserts that two booleans are equal.",
-					"Asserts that two floats are equal concerning a delta.",
-					"Asserts that two booleans are equal.",
-					"Asserts that two Strings are equal.",
-					"Asserts that two floats are equal concerning a delta.",
-					"Asserts that two bytes are equal.",
-					"Asserts that two doubles are equal concerning a delta.",
-					"Asserts that two chars are equal.",
-					"Asserts that two objects are equal.",
-					"Asserts that two longs are equal.",
-					"Asserts that a condition is false.",
-					"Asserts that a condition is false.",
-					"Asserts that an object isn't null.",
-					"sserts that an object isn't null.",
-					"Asserts that two objects do not refer to the same object.",
-					"Asserts that two objects do not refer to the same object.",
-					"Asserts that an object is null.",
-					"Asserts that an object is null.",
-					"Asserts that two objects refer to the same object.",
-					"Asserts that two objects refer to the same object.",
-					"Asserts that a condition is true.",
-					"Asserts that a condition is true.",
-			};
 			
 			Shell previewShell = new Shell();
 			previewShell.setText("Preview");
 		
+			final StyledText text = new StyledText(previewShell,  SWT.BORDER &SWT.SHELL_TRIM| SWT.V_SCROLL|SWT.H_SCROLL);
+			text.setEditable(true);
+			text.setText(file);
+			text.setBounds(10, 30, 700, 650);
 			
 			final Table table = new Table(previewShell, SWT.BORDER | SWT.FULL_SELECTION);
 			table.setBounds(10, 5, 700, 120);
 			table.setHeaderVisible(true);
 			table.setLinesVisible(true);
 			table.setVisible(false);
-			TableColumn tblclmnNewColumn = new TableColumn(table, SWT.CENTER);
-			tblclmnNewColumn.setWidth(680);
-			tblclmnNewColumn.setText("Assert Methods Tip...");
+			table.addListener(SWT.MouseDoubleClick, new Listener(){
 
-			for(int i=0; i<assertContents.length; i++){
+				public void handleEvent(Event event) {
+					// TODO Auto-generated method stub
+					TableItem[] selection = table.getSelection();
+					
+					Shell s = new Shell();
+					boolean isConfirmed = MessageDialog.openConfirm(s,"Warning","Would you like to use this method " + "\n" +"'"+selection[0].getText()+"'"+ "?" +"\n\n"+"Description of selected this assert method: "+"\n"+"\""+toolTipAssertContents[event.index]+"\"");
+					if(isConfirmed == true){
+						String span = selection[0].getText()+";"+"\n";
+						span = span.toString().substring(12, span.toString().length());
+						text.replaceTextRange(text.getSelection().y, 0, span);
+					}
+					else{
+						s.close();
+					}
+				}
+			});
+			
+			for(int i = 0; i < assertContents.length; i++){
 				TableItem tableItem = new TableItem(table, SWT.NONE);
 				tableItem.setText(assertContents[i]);
 			}
 			
-			final StyledText text = new StyledText(previewShell,  SWT.BORDER &SWT.SHELL_TRIM| SWT.V_SCROLL|SWT.H_SCROLL);
-			text.setEditable(true);
-			text.setText(file);
-			text.setBounds(10, 30, 700, 650);
-			final Button showTip = new Button(previewShell, SWT.NONE);
-			showTip.setBounds(660, 5, 30, 20);
-			showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/showTip.jpg"));
-			showTip.setToolTipText(" \"assert()\" Tooltip C ");
+			TableColumn column = new TableColumn(table, SWT.LEFT);
+			column.setWidth(680);
+			column.setText("Tips for assert() methods");
+			
+			Button showTipButton = new Button(previewShell, SWT.NONE);
+			showTipButton.setBounds(660, 5, 30, 20);
+			showTipButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/showTip.jpg"));
+			showTipButton.setToolTipText("Show assert() Methods Tip");
 			
 			
-			Button confirm = new Button(previewShell, SWT.NONE);
-			confirm.setText("Generate");
-			confirm.setBounds(590, 680, 100, 30);
+			Button confirmButton = new Button(previewShell, SWT.NONE);
+			confirmButton.setText("Generate");
+			confirmButton.setBounds(590, 680, 100, 30);
 			
 			
 			previewShell.setSize(700, 730);
 			previewShell.pack();
 			previewShell.open();
 			
-			showTip.addSelectionListener(new ShowTooltipListener(text, table, showTip));
-			confirm.addSelectionListener(new ConfirmButtonListener(previewShell, text));
+			showTipButton.addSelectionListener(new ShowTooltipListener(text, table, showTipButton));
+			confirmButton.addSelectionListener(new ConfirmButtonListener(previewShell, text));
 		}
 
 	}
@@ -677,7 +696,7 @@ public class View extends ViewPart {
 				table.setVisible(true);
 				showTip.setBounds(660, 135, 30, 20);
 				showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/hideTip.jpg"));
-				showTip.setToolTipText(" \"assert()\" Tooltip A");
+				showTip.setToolTipText("Hide assert() Methods Tip");
 			}
 			else{
 				text.setBounds(10, 30, 700, 650);
@@ -685,7 +704,7 @@ public class View extends ViewPart {
 				table.setVisible(false);
 				showTip.setBounds(660, 5, 30, 20);
 				showTip.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/showTip.jpg"));
-				showTip.setToolTipText(" \"assert()\" Tooltip B");
+				showTip.setToolTipText("Show assert() Methods Tip");
 			}
 			
 			assertTipFlag++;
@@ -722,77 +741,18 @@ public class View extends ViewPart {
 		
 	}
 	
-	private void drawTabFolder(){
-		int tabIndex = tabFolder.getSelectionIndex();		
-		Composite mainComposite = new Composite(tabFolder, SWT.NONE);
-		
-		RowLayout mainLayout = new RowLayout();
-		mainLayout.wrap = false;
-		//mainLayout.pack = false;
-		mainLayout.type = SWT.VERTICAL;
-		mainComposite.setLayout(mainLayout);
-		
-		if(methods.get(tabIndex).getTypeVariables().isEmpty()){
-			tabItem[tabIndex].setControl(mainComposite);
-			return;
+	class DeleteMethodsListener implements SelectionListener{
+
+		public void widgetSelected(SelectionEvent e) {
+			// TODO Auto-generated method stub
+			deleteAllMethods();
+		}
+
+		public void widgetDefaultSelected(SelectionEvent e) {
+			// TODO Auto-generated method stub
+			
 		}
 		
-		int lineLength = methods.get(tabFolder.getSelectionIndex()).getTypeVariables().size();
-		
-		for(int i = 0; i < lineLength; i++){	
-			Composite rowComposite = new Composite(mainComposite, SWT.NONE);
-			RowLayout rowLayout = new RowLayout();
-			rowLayout.wrap = false;
-			rowLayout.pack = true;
-			rowComposite.setLayout(rowLayout);
-			
-			String type = methods.get(tabIndex).getTypeVariables().get(i).getType();
-			String id = methods.get(tabIndex).getTypeVariables().get(i).getId();
-			String value = methods.get(tabIndex).getTypeVariables().get(i).getValue();
-			
-			Button typeButton = new Button(rowComposite, SWT.NONE);
-			typeButton.setSize(35, 20);
-			
-			if(type.equals(MethodSkeleton.BUTTON))
-				typeButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgBtnType.jpg"));
-			else
-				typeButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgTextType.jpg"));
-			
-			Label idLabel = new Label(rowComposite, SWT.BORDER);
-			idLabel.setText(id);
-			idLabel.setSize(150, 20);
-			
-			if(value != null){
-				Text valueText = new Text(rowComposite, SWT.BORDER);
-				valueText.setForeground(valueText.getDisplay().getSystemColor(SWT.COLOR_BLUE));
-				valueText.addFocusListener(new TextWidgetFocusListener(i, id, valueText));
-			}else{
-				Text valueText = new Text(rowComposite, SWT.BORDER);
-				valueText.setVisible(false);
-			}
-			
-			Button upButton = new Button(rowComposite, SWT.PUSH);
-			Button downButton = new Button(rowComposite, SWT.PUSH);
-			Button deleteButton = new Button(rowComposite, SWT.PUSH);
-			
-			upButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/hideTip.jpg"));
-			downButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/showTip.jpg"));
-			//upButton.setText("U"); // UP
-			//downButton.setText("D"); // Down
-			deleteButton.setText("X"); // Delete
-			
-			upButton.addSelectionListener(new OrderButtonListener("UP", i));
-			downButton.addSelectionListener(new OrderButtonListener("DOWN", i));
-			deleteButton.addSelectionListener(new OrderButtonListener("DELETE", i));
-			
-			if(i == 0)
-				upButton.setVisible(false);
-			
-			if(i == (lineLength - 1))
-				downButton.setVisible(false);
-		}
-		
-		tabItem[tabIndex].setControl(mainComposite);
 	}
 	
 	class OrderButtonListener implements SelectionListener{
@@ -850,7 +810,9 @@ public class View extends ViewPart {
 
 		public void focusLost(FocusEvent e) {
 			// TODO Auto-generated method stub
-			String value = text.getText();
+			Text selectedText = (Text)e.getSource();
+			//String value = text.getText();
+			String value = selectedText.getText();
 			methods.get(tabFolder.getSelectionIndex()).getTypeVariables().set(index, new TypeVariable("EditText", id, value));
 		}
 		
@@ -905,6 +867,18 @@ public class View extends ViewPart {
 			files.add(directory);
 		}
 	}
+	
+	private void deleteAllMethods(){
+		for(int i = tabSize - 1; i >= 0; i--){
+			tabItem[i].dispose();
+			methods.remove(i);
+			tabSize--;
+		}
+		
+		if(tabSize == 0){
+			btn_delete_all_methods.setVisible(false);
+		}
+	}
 
 	public String getSuperClass(String file) throws IOException{
 		File f = new File(file);
@@ -937,6 +911,85 @@ public class View extends ViewPart {
 		br.close();
 		
 		return superClassName;
+	}
+	
+	private void repaintCompositeViewList(){
+		composite_view_list.dispose();
+		composite_view_list = new Composite(composite, SWT.NONE);
+		composite_view_list.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
+		composite_view_list.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		composite_view_list.setBounds(14,293,378,366);
+	}
+	
+	private void drawTabFolder(){
+		int tabIndex = tabFolder.getSelectionIndex();
+		
+		if(methods.get(tabIndex).getTypeVariables().isEmpty()){
+			tabItem[tabIndex].setControl(null);
+			return;
+		}
+		
+		Composite mainComposite = new Composite(tabFolder, SWT.NONE);
+		RowLayout mainLayout = new RowLayout();
+		mainLayout.wrap = false;
+		mainLayout.pack = true;
+		mainLayout.type = SWT.VERTICAL;
+		mainComposite.setLayout(mainLayout);
+		
+		int lineLength = methods.get(tabFolder.getSelectionIndex()).getTypeVariables().size();
+		
+		for(int i = 0; i < lineLength; i++){	
+			Composite rowComposite = new Composite(mainComposite, SWT.NONE);
+			RowLayout rowLayout = new RowLayout();
+			rowLayout.wrap = true;
+			rowLayout.pack = true;
+			rowComposite.setLayout(rowLayout);
+			
+			String type = methods.get(tabIndex).getTypeVariables().get(i).getType();
+			String id = methods.get(tabIndex).getTypeVariables().get(i).getId();
+			String value = methods.get(tabIndex).getTypeVariables().get(i).getValue();
+			
+			Button typeButton = new Button(rowComposite, SWT.NONE);
+			typeButton.setSize(35, 20);
+			
+			if(type.equals(MethodSkeleton.BUTTON))
+				typeButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgBtnType.jpg"));
+			else
+				typeButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgTextType.jpg"));
+			
+			Label idLabel = new Label(rowComposite, SWT.BORDER);
+			idLabel.setText(id);
+			idLabel.setSize(150, 20);
+			
+			if(value != null){
+				Text valueText = new Text(rowComposite, SWT.BORDER);
+				valueText.setForeground(valueText.getDisplay().getSystemColor(SWT.COLOR_BLUE));
+				valueText.addFocusListener(new TextWidgetFocusListener(i, id, valueText));
+			}else{
+				Text valueText = new Text(rowComposite, SWT.BORDER);
+				valueText.setVisible(false);
+			}
+			
+			Button upButton = new Button(rowComposite, SWT.PUSH);
+			Button downButton = new Button(rowComposite, SWT.PUSH);
+			Button deleteButton = new Button(rowComposite, SWT.PUSH);
+			
+			upButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/Up.jpg"));
+			downButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/Down.jpg"));
+			deleteButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/Del.jpg"));
+			
+			upButton.addSelectionListener(new OrderButtonListener("UP", i));
+			downButton.addSelectionListener(new OrderButtonListener("DOWN", i));
+			deleteButton.addSelectionListener(new OrderButtonListener("DELETE", i));
+			
+			if(i == 0)
+				upButton.setVisible(false);
+			
+			if(i == (lineLength - 1))
+				downButton.setVisible(false);
+		}
+		
+		tabItem[tabIndex].setControl(mainComposite);
 	}
 	
 	/**
