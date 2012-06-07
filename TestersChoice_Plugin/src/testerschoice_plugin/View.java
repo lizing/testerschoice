@@ -16,6 +16,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -78,6 +79,7 @@ public class View extends ViewPart{
 	Combo combo_activity, combo_provider, combo_layout_xml;
 	Label lbl_app_name;
 	Composite composite_view_list;
+	ScrolledComposite mainComposite;
 	TabFolder tabFolder;
 	TabItem[] tabItem;
 
@@ -90,9 +92,9 @@ public class View extends ViewPart{
 	ArrayList<MethodSkeleton> methods = new ArrayList<MethodSkeleton>();
 	
 	int tabSize = 0;
+	int height[];
+	int selectCount[];
 	static int assertTipFlag = 0;
-
-	// ArrayList<TypeVariable> typeVariable;
 
 	HashMap<String, String> xmlHash = new HashMap<String, String>();
 	
@@ -173,7 +175,12 @@ public class View extends ViewPart{
 		text_layout_Text = new Button[32];
 		label_layout_button = new Label[16];
 		label_layout_Text = new Label[32];
+		height = new int[MAX_TAB_SIZE];
+		selectCount = new int[32];
 		view_property = new HashMap<String, String>();
+		for(int i=0; i<16; i++){
+			height[i] = 450;
+		}
 	}
 	
 	/**
@@ -291,7 +298,7 @@ public class View extends ViewPart{
 
 		text_method_name = new Text(composite, SWT.BORDER);
 		text_method_name.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
-		text_method_name.setBounds(526, 14, 205, 20);
+		text_method_name.setBounds(530, 14, 201, 20);
 
 		Button btn_add_method = new Button(composite, SWT.NONE);
 		btn_add_method.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
@@ -326,9 +333,9 @@ public class View extends ViewPart{
 		label_4.setBounds(408, 4, 2, 655);
 
 		Label lblNewLabel_1 = new Label(composite, SWT.NONE);
-		lblNewLabel_1.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
-		lblNewLabel_1.setBounds(423, 14, 95, 20);
-		lblNewLabel_1.setText("Method Name:");
+		lblNewLabel_1.setFont(SWTResourceManager.getFont("Arial", 12, SWT.NORMAL));
+		lblNewLabel_1.setBounds(423, 14, 113, 20);
+		lblNewLabel_1.setText("public void test");
 
 		Label lblNewLabel_3 = new Label(composite, SWT.NONE);
 		lblNewLabel_3.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
@@ -372,6 +379,11 @@ public class View extends ViewPart{
 
 		public void widgetSelected(SelectionEvent e) {
 			// TODO Auto-generated method stub
+			if(tabSize>MAX_TAB_SIZE-1)
+			{
+				MessageDialog.openWarning(new Shell(), "Warning...", "Can't add any more");
+				return;
+			}
 			if (text_method_name.getText().length() > 0) {
 				tabItem[tabSize] = new TabItem(tabFolder, SWT.NONE);
 				methods.add(new MethodSkeleton());
@@ -717,6 +729,18 @@ public class View extends ViewPart{
 
 		public void widgetSelected(SelectionEvent e) {
 			// TODO Auto-generated method stub
+			selectCount[tabFolder.getSelectionIndex()]++;
+			if(selectCount[tabFolder.getSelectionIndex()]>32)
+			{
+				MessageDialog.openWarning(new Shell(), "Warning...", "Can't add any more");
+				return;
+			}
+			if(selectCount[tabFolder.getSelectionIndex()]>9){
+				
+				height[tabFolder.getSelectionIndex()] += 53;
+				mainComposite.setMinHeight(height[tabFolder.getSelectionIndex()]);
+			}
+			
 			int tabIndex = tabFolder.getSelectionIndex();
 			String[] info = (String[])e.widget.getData();
 			String type = info[0];
@@ -925,17 +949,25 @@ public class View extends ViewPart{
 			return;
 		}
 		
-		Composite mainComposite = new Composite(tabFolder, SWT.NONE);
+		mainComposite = new ScrolledComposite(tabFolder,  SWT.BORDER|SWT.V_SCROLL|SWT.H_SCROLL);
+		mainComposite.setExpandHorizontal(true);
+		mainComposite.setExpandVertical(true);
+		mainComposite.setMinWidth(350);
+		mainComposite.setMinHeight(height[tabFolder.getSelectionIndex()]);
+		Composite subComposite = new Composite(mainComposite, SWT.BORDER);
+		
 		RowLayout mainLayout = new RowLayout();
 		mainLayout.wrap = false;
 		mainLayout.pack = true;
 		mainLayout.type = SWT.VERTICAL;
-		mainComposite.setLayout(mainLayout);
+		//mainComposite.setLayout(mainLayout);
+		subComposite.setLayout(mainLayout);
+		
 		
 		int lineLength = methods.get(tabFolder.getSelectionIndex()).getTypeVariables().size();
 		
 		for(int i = 0; i < lineLength; i++){	
-			Composite rowComposite = new Composite(mainComposite, SWT.NONE);
+			Composite rowComposite = new Composite(subComposite, SWT.NONE);
 			GridLayout gridLayout = new GridLayout(9, false);
 			rowComposite.setLayout(gridLayout);
 			
@@ -1016,6 +1048,7 @@ public class View extends ViewPart{
 		}
 		
 		tabItem[tabIndex].setControl(mainComposite);
+		mainComposite.setContent(subComposite);
 	}
 	
 	/**

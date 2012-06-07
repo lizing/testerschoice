@@ -19,3 +19,5 @@ SingleActivityProviderAppTest - 위의 어플리케이션을 테스트하는 프
 SingleActivityProviderAppTest의 ActivityProviderInstrumentationTestCase2.java를 이용해서 테스트 케이스 작성
 
 연락처 - lizingkr@gmail.com (이진우)
+
+자세한 내용(For details) - http://www.slideshare.net/testerschoice/testerschoiceplugintutorial

@@ -43,9 +43,7 @@ public class AddNewActivity extends Activity {
 				// TODO Auto-generated method stub
 				String item = mItem.getText().toString();
 				String itemPrice = mPrice.getText().toString();
-				int day = Integer.parseInt(mDay.getText().toString());
-				int month = Integer.parseInt(mMonth.getText().toString());
-				int year = Integer.parseInt(mYear.getText().toString());
+				
 				
 				if(item.isEmpty()){
 					// 알림 창 코드 추가
@@ -60,6 +58,16 @@ public class AddNewActivity extends Activity {
 					displayDialog(message);
 					return;
 				}
+				
+				if(mDay.getText().toString().isEmpty() || mMonth.getText().toString().isEmpty() || mYear.getText().toString().isEmpty()){
+					String message = getResources().getString(R.string.input_day);
+					displayDialog(message);
+					return;
+				}
+				
+				int day = Integer.parseInt(mDay.getText().toString());
+				int month = Integer.parseInt(mMonth.getText().toString());
+				int year = Integer.parseInt(mYear.getText().toString());
 				
 				if(day <= 0 || day > 31){
 					String message = getResources().getString(R.string.input_day);

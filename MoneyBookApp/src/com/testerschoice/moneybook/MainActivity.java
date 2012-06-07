@@ -54,7 +54,9 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				getContentResolver().delete(MoneyBookColumns.CONTENT_URI, null, null);
-				Toast.makeText(MainActivity.this, "내용을 모두 삭제하였습니다.", Toast.LENGTH_SHORT);
+				Toast.makeText(MainActivity.this, "내용을 모두 삭제하였습니다.", Toast.LENGTH_SHORT).show();
+				items.clear();
+				adapter.notifyDataSetChanged();
 				displayList();
 			}
 		});
