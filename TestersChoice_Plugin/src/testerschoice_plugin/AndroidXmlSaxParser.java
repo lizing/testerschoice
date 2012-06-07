@@ -16,7 +16,7 @@ public class AndroidXmlSaxParser extends DefaultHandler {
 
 	
 	//final static String filename = "C:\\Yeon_Sik\\prj\\HouseholdBook2\\res\\layout\\addpage.xml";
-	String filename,elementName, pkg;
+	String filename,elementName, pkg, authority;
 	ArrayList<String> idList = new ArrayList<String>();
 	ArrayList<String> typeList = new ArrayList<String>();
 	SAXParserFactory factory;
@@ -60,6 +60,11 @@ public class AndroidXmlSaxParser extends DefaultHandler {
 						String value = attributes.getValue(i);
 						pkg = value;
 					}
+					
+					if(name.equals("android:authorities")){
+						String value = attributes.getValue(i);
+						authority = value;
+					}
 				}		
 		}
 	}
@@ -73,6 +78,10 @@ public class AndroidXmlSaxParser extends DefaultHandler {
 		
 		int index = value.indexOf("/");
 		return id = value.substring(index+1);
+	}
+	
+	public String getAuthority(){
+		return authority;
 	}
 	
 	public void parse(){

@@ -19,9 +19,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 	public void preWindowOpen() {
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
-		configurer.setInitialSize(new Point(820, 780));
+		configurer.setInitialSize(new Point(860, 760));
 		configurer.setShowCoolBar(false);
 		configurer.setShowStatusLine(false);
-		configurer.setTitle("RCP Application");
+		configurer.setTitle("Testers Choice Testcase Code Generator");
 	}
 }

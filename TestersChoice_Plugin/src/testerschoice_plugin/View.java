@@ -19,9 +19,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -31,6 +34,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -49,9 +53,7 @@ import CodeGen.MethodSkeleton;
 import CodeGen.TestCaseTemplate;
 import CodeGen.TypeVariable;
 
-public class View extends ViewPart {
-	public View() {
-	}
+public class View extends ViewPart{
 
 	private static final int MAX_TAB_SIZE = 16;
 	public static final String ID = "TestersChoice_Plugin.view";
@@ -79,7 +81,6 @@ public class View extends ViewPart {
 	Composite composite_view_list;
 	TabFolder tabFolder;
 	TabItem[] tabItem;
-	Composite[] tabComposite;
 
 	HashMap<String, String> view_property;
 	Button[] btn_layout_button;
@@ -95,7 +96,6 @@ public class View extends ViewPart {
 	// ArrayList<TypeVariable> typeVariable;
 
 	HashMap<String, String> xmlHash = new HashMap<String, String>();
-	private Text text_authority;
 	
 	private static final String [] assertContents = {
 			"static void assertEquals(short expected, short actual)",
@@ -167,6 +167,16 @@ public class View extends ViewPart {
 			"Asserts that a condition is true.",
 	};
 	
+	public View() {
+		tabItem = new TabItem[MAX_TAB_SIZE];
+		methodNames = new String[MAX_TAB_SIZE];
+		btn_layout_button = new Button[16];
+		text_layout_Text = new Button[32];
+		label_layout_button = new Label[16];
+		label_layout_Text = new Label[32];
+		view_property = new HashMap<String, String>();
+	}
+	
 	/**
 	 * The content provider class is responsible for providing objects to the
 	 * view. It can wrap existing objects in adapters or simply return objects
@@ -209,16 +219,7 @@ public class View extends ViewPart {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
-		
 		composite = new Composite(parent, SWT.NONE);
-		tabItem = new TabItem[MAX_TAB_SIZE];
-		tabComposite = new Composite[MAX_TAB_SIZE];
-		methodNames = new String[MAX_TAB_SIZE];
-		btn_layout_button = new Button[16];
-		text_layout_Text = new Button[32];
-		label_layout_button = new Label[16];
-		label_layout_Text = new Label[32];
-		view_property = new HashMap<String, String>();		
 		
 		Label lblTargetApplication = new Label(composite, SWT.NONE);
 		lblTargetApplication.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
@@ -271,7 +272,7 @@ public class View extends ViewPart {
 		composite_view_list.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		composite_view_list.setBackground(SWTResourceManager
 				.getColor(SWT.COLOR_WHITE));
-		composite_view_list.setBounds(14, 293, 378, 366);
+		composite_view_list.setBounds(14, 260, 378, 399);
 
 		Button btn_load = new Button(composite, SWT.NONE);
 		btn_load.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
@@ -282,7 +283,7 @@ public class View extends ViewPart {
 		Button btn_fetch = new Button(composite, SWT.NONE);
 		btn_fetch.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		btn_fetch.setText("Fetch View(s)");
-		btn_fetch.setBounds(296, 252, 95, 35);
+		btn_fetch.setBounds(296, 219, 95, 35);
 		btn_fetch.addSelectionListener(new FetchButtonListener());
 
 		tabFolder = new TabFolder(composite, SWT.NONE);
@@ -329,18 +330,6 @@ public class View extends ViewPart {
 		lblNewLabel_1.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		lblNewLabel_1.setBounds(423, 14, 95, 20);
 		lblNewLabel_1.setText("Method Name:");
-
-		Label lblNewLabel_2 = new Label(composite, SWT.NONE);
-		lblNewLabel_2.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
-		lblNewLabel_2.setBounds(14, 221, 56, 15);
-		lblNewLabel_2.setText("Authority:");
-
-		text_authority = new Text(composite, SWT.BORDER);
-		text_authority.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
-		text_authority.setBounds(152, 219, 239, 20);
-
-		Label label_5 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		label_5.setBounds(10, 242, 381, 2);
 
 		Label lblNewLabel_3 = new Label(composite, SWT.NONE);
 		lblNewLabel_3.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
@@ -420,12 +409,14 @@ public class View extends ViewPart {
 			
 			projectPath = dlg.open();
 			
-			selectedDirectory = new File(projectPath);
-			project = new File(projectPath + File.separator +"AndroidManifest.xml");
+			
 			
 			if(projectPath == null){
 				return;
 			}
+			
+			selectedDirectory = new File(projectPath);
+			project = new File(projectPath + File.separator +"AndroidManifest.xml");
 			
 			if(!project.exists()){
 				MessageDialog.openWarning(new Shell(), "Warning", "Please Select an Android Project");
@@ -504,10 +495,9 @@ public class View extends ViewPart {
 			
 			activity_class = combo_activity.getText();
 			provider_class = combo_provider.getText();
-			authority = text_authority.getText();
 			testcase_class_name = getFileNameWithoutFileExtention(activity_class) + "Test";
 			
-			if(activity_class == "" || provider_class == "" || authority == "" || combo_activity.getItemCount() == 0 || combo_layout_xml.getItemCount() == 0){
+			if(activity_class == "" || provider_class == "" || combo_activity.getItemCount() == 0 || combo_layout_xml.getItemCount() == 0){
 				MessageDialog.openWarning(new Shell(), "Warning", "Please Select a Project First");
 				return;
 			}
@@ -515,14 +505,22 @@ public class View extends ViewPart {
 			AndroidXmlSaxParser buttonParser = new AndroidXmlSaxParser(xmlHash.get(combo_layout_xml.getText()), "Button");
 			AndroidXmlSaxParser editTextParser = new AndroidXmlSaxParser(xmlHash.get(combo_layout_xml.getText()), "EditText");
 			AndroidXmlSaxParser manifestParser = new AndroidXmlSaxParser(projectPath + File.separator + "AndroidManifest.xml", "manifest");
+			AndroidXmlSaxParser authorityParser = new AndroidXmlSaxParser(projectPath + File.separator + "AndroidManifest.xml", "provider");
 
 			buttonParser.parse();
 			editTextParser.parse();
 			manifestParser.parse();
+			authorityParser.parse();
 			
 			ArrayList<String> buttonIds = buttonParser.getIdArrayList();
 			ArrayList<String> editTextIds = editTextParser.getIdArrayList();
 			pkg_name = manifestParser.getPackageName();
+			authority = authorityParser.getAuthority();
+			
+			if(authority.isEmpty() || authority == null){
+				MessageDialog.openWarning(new Shell(), "Warning", "Could not find authority");
+				return;
+			}
 			
 			Text btnType = new Text(composite_view_list, SWT.PUSH);
 			btnType.setBounds(15, 10, 350, 20);
@@ -813,7 +811,9 @@ public class View extends ViewPart {
 			Text selectedText = (Text)e.getSource();
 			//String value = text.getText();
 			String value = selectedText.getText();
-			methods.get(tabFolder.getSelectionIndex()).getTypeVariables().set(index, new TypeVariable("EditText", id, value));
+			TypeVariable tv = new TypeVariable("EditText", id, value);
+			methods.get(tabFolder.getSelectionIndex()).getTypeVariables().set(index, tv);
+			//methods.get(tabFolder.getSelectionIndex()).getTypeVariables().set(index, new TypeVariable("EditText", id, value));
 		}
 		
 	}
@@ -918,8 +918,8 @@ public class View extends ViewPart {
 		composite_view_list = new Composite(composite, SWT.NONE);
 		composite_view_list.setFont(SWTResourceManager.getFont("Arial", 9, SWT.NORMAL));
 		composite_view_list.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		composite_view_list.setBounds(14,293,378,366);
-	}
+		composite_view_list.setBounds(14, 260, 378, 399);
+	}	
 	
 	private void drawTabFolder(){
 		int tabIndex = tabFolder.getSelectionIndex();
@@ -940,10 +940,13 @@ public class View extends ViewPart {
 		
 		for(int i = 0; i < lineLength; i++){	
 			Composite rowComposite = new Composite(mainComposite, SWT.NONE);
-			RowLayout rowLayout = new RowLayout();
-			rowLayout.wrap = true;
-			rowLayout.pack = true;
-			rowComposite.setLayout(rowLayout);
+			GridLayout gridLayout = new GridLayout(9, false);
+			rowComposite.setLayout(gridLayout);
+			
+			//RowLayout rowLayout = new RowLayout();
+			//rowLayout.wrap = true;
+			//rowLayout.pack = false;
+			//rowComposite.setLayout(rowLayout);
 			
 			String type = methods.get(tabIndex).getTypeVariables().get(i).getType();
 			String id = methods.get(tabIndex).getTypeVariables().get(i).getId();
@@ -951,6 +954,10 @@ public class View extends ViewPart {
 			
 			Button typeButton = new Button(rowComposite, SWT.NONE);
 			typeButton.setSize(35, 20);
+			GridData gridData = new GridData();
+			gridData.horizontalAlignment = GridData.CENTER;
+			gridData.horizontalSpan = 2;
+			typeButton.setLayoutData(gridData);
 			
 			if(type.equals(MethodSkeleton.BUTTON))
 				typeButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/imgBtnType.jpg"));
@@ -960,19 +967,42 @@ public class View extends ViewPart {
 			Label idLabel = new Label(rowComposite, SWT.BORDER);
 			idLabel.setText(id);
 			idLabel.setSize(150, 20);
+			gridData = new GridData();
+			gridData.horizontalAlignment = GridData.CENTER;
+			gridData.horizontalSpan = 2;
+			idLabel.setLayoutData(gridData);
+			
+			Text valueText = new Text(rowComposite, SWT.BORDER);
+			gridData = new GridData();
+			gridData.horizontalAlignment = GridData.CENTER;
+			gridData.horizontalSpan = 2;
 			
 			if(value != null){
-				Text valueText = new Text(rowComposite, SWT.BORDER);
+				valueText.setSize(150, 20);
+				valueText.setLayoutData(gridData);
 				valueText.setForeground(valueText.getDisplay().getSystemColor(SWT.COLOR_BLUE));
+				valueText.setText(value);
 				valueText.addFocusListener(new TextWidgetFocusListener(i, id, valueText));
 			}else{
-				Text valueText = new Text(rowComposite, SWT.BORDER);
+				//valueText.setText("hi");
 				valueText.setVisible(false);
 			}
 			
 			Button upButton = new Button(rowComposite, SWT.PUSH);
 			Button downButton = new Button(rowComposite, SWT.PUSH);
 			Button deleteButton = new Button(rowComposite, SWT.PUSH);
+			
+			upButton.setSize(35, 20);
+			downButton.setSize(35, 20);
+			deleteButton.setSize(35, 20);
+			
+			gridData = new GridData();
+			gridData.horizontalAlignment = GridData.CENTER;
+			gridData.horizontalSpan = 1;
+		
+			upButton.setLayoutData(gridData);
+			downButton.setLayoutData(gridData);
+			deleteButton.setLayoutData(gridData);
 			
 			upButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/Up.jpg"));
 			downButton.setImage(ResourceManager.getPluginImage("TestersChoice_Plugin", "icons/Down.jpg"));
