@@ -19,7 +19,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
@@ -34,7 +33,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -57,6 +55,7 @@ public class View extends ViewPart{
 
 	private static final int MAX_TAB_SIZE = 16;
 	public static final String ID = "TestersChoice_Plugin.view";
+	public static final String FRAMEWORK_FILE_NAME = "ActivityProviderInstrumentationTestCase2.java";
 	private Text text_path;
 	private Text text_method_name;
 
@@ -638,7 +637,6 @@ public class View extends ViewPart{
 			confirmButton.setText("Generate");
 			confirmButton.setBounds(590, 680, 100, 30);
 			
-			
 			previewShell.setSize(700, 730);
 			previewShell.pack();
 			previewShell.open();
@@ -827,8 +825,6 @@ public class View extends ViewPart{
 		String fileName = fd.open();
 
 		if (fileName == null) {
-			// Show Alert Dialog
-
 			return false;
 		}
 
