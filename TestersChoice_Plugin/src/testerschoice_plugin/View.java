@@ -60,10 +60,6 @@ public class View extends ViewPart{
 	private Text text_path;
 	private Text text_method_name;
 
-	/*
-	 * ACTIVITY_CLASS, PROVIDER_CLASS, AUTHORITY);
-	 * skeleton.setClassName(TESTCASE_CLASS_NAME); skeleton.setPackageName(PKG);
-	 */
 	Composite composite;
 
 	String activity_class;
@@ -364,10 +360,10 @@ public class View extends ViewPart{
 		btn_delete_all_methods.setBounds(681, 54, 132, 28);
 		btn_delete_all_methods.setText("Delete All Method(s)");
 		btn_delete_all_methods.addSelectionListener(new DeleteMethodsListener());
+		
 		if(tabSize == 0){
 			btn_delete_all_methods.setVisible(false);
 		}
-
 	}
 
 	class NewMethodButtonListener implements SelectionListener {

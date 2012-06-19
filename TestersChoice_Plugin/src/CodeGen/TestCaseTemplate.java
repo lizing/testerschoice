@@ -1,3 +1,7 @@
+/**
+ * 테스트케이스 자동생성을 위한 Template
+ */
+
 package CodeGen;
 
 import java.util.*;

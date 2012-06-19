@@ -1,3 +1,7 @@
+/**
+ * 안드로이드 Layout XML을 파싱하여 패키지 이름, authority, View의 id를 구하는 SAX Parser
+ */
+
 package testerschoice_plugin;
 
 import java.io.IOException;
@@ -14,18 +18,24 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class AndroidXmlSaxParser extends DefaultHandler {
 
+	/**
+	 * fileName layout XML파일
+	 * elementName Button 혹은 EditText
+	 * pkg 패키지 이름
+	 * authority ContentProvider의 authority
+	 */
+	String fileName,elementName, pkg, authority;
 	
-	//final static String filename = "C:\\Yeon_Sik\\prj\\HouseholdBook2\\res\\layout\\addpage.xml";
-	String filename,elementName, pkg, authority;
 	ArrayList<String> idList = new ArrayList<String>();
 	ArrayList<String> typeList = new ArrayList<String>();
+	
 	SAXParserFactory factory;
 	SAXParser saxParser;
 	
-	public AndroidXmlSaxParser(String filename, String elementName) {
+	public AndroidXmlSaxParser(String fileName, String elementName) {
 		// TODO Auto-generated constructor stub
 		
-		this.filename = filename;
+		this.fileName = fileName;
 		this.elementName = elementName;
 		this.pkg = null;
 		
@@ -41,6 +51,10 @@ public class AndroidXmlSaxParser extends DefaultHandler {
 		}
 		
 	}
+	
+	/**
+	 * XML 파일을 읽어들이면서 id, package, authority를 찾아 저장
+	 */
 	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
@@ -86,7 +100,7 @@ public class AndroidXmlSaxParser extends DefaultHandler {
 	
 	public void parse(){
 		try {
-			saxParser.parse(filename, this);
+			saxParser.parse(fileName, this);
 		} catch (SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
