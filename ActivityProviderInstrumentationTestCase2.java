@@ -1,4 +1,4 @@
-package com.lizing.simple.singleactivityprovider.test;
+package com.testerschoice.moneybook.test;
 
 import android.app.Activity;
 import android.app.Application;
@@ -18,7 +18,7 @@ import android.view.Window;
 
 public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activity, P extends ContentProvider> extends
 		ActivityInstrumentationTestCase2 {
-	
+
 	private Class<T> mActivityClass;
 	private Class<P> mProviderClass;
 	private String mAuthority;
@@ -38,11 +38,12 @@ public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activi
 	@Override
 	public void setUp() throws Exception{
 		super.setUp();
-		
+		//MockContext 생성
 		mContext = new MockContextWithMockContentProvider(getInstrumentation().getTargetContext(), mProviderClass, mAuthority);
 		mContext.makeExistingFilesAndDbsAccessible();
 	}
 	
+	//MockContext를 이용한 Activity를 생성 후 반환
 	public T startActivity(){
 		T newActivity = null;
 		
@@ -148,7 +149,7 @@ public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activi
 			super(context, MOCK_FILE_PREFIX);
 			init(authority, providerClass);
 		}
-		
+		//MockContentResolver 초기화
 		private void init(String authority, Class<P> providerClass) throws Exception{
 			mResolver = new MockContentResolver();
 			P mProvider = providerClass.newInstance();
@@ -157,6 +158,8 @@ public abstract class ActivityProviderInstrumentationTestCase2 <T extends Activi
 			mResolver.addProvider(authority, mProvider);
 		}
 		
+		//MockContext를 이용해 만든 Activity에서 getContentResolver()를 호출 시 이 메소드가 호출됨
+		//MockContentResolver를 반환
 		@Override
 		public ContentResolver getContentResolver(){
 			return mResolver;
